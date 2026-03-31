@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/site-url";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -33,10 +34,12 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (isSignUp) {
+      const emailRedirectTo = getAuthCallbackUrl();
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo,
           data: {
             full_name: fullName,
             salon_name: salonName || "Meu Salão",
