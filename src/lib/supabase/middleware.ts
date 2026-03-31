@@ -5,7 +5,8 @@ import { getSupabaseConfigOrNull } from "./env";
 function isPublicAuthPath(pathname: string) {
   return (
     pathname.startsWith("/login") ||
-    pathname.startsWith("/auth")
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api/auth/register-intent")
   );
 }
 

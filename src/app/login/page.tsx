@@ -34,6 +34,36 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (isSignUp) {
+      const intentRes = await fetch("/api/auth/register-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const intentJson = (await intentRes.json().catch(() => ({}))) as {
+        code?: string;
+      };
+
+      if (!intentRes.ok) {
+        const code = intentJson.code;
+        const byCode: Record<string, string> = {
+          disposable_email:
+            "E-mails temporários ou descartáveis não são aceitos. Use um e-mail corporativo ou pessoal válido.",
+          rate_limit_email:
+            "Este e-mail já teve várias tentativas de cadastro. Aguarde 24 horas ou use outro e-mail.",
+          rate_limit_ip:
+            "Muitas tentativas de cadastro nesta conexão. Aguarde 24 horas ou tente outra rede.",
+          server_misconfigured:
+            "Cadastro indisponível: configure SUPABASE_SERVICE_ROLE_KEY no servidor (Vercel).",
+          invalid_email: "Informe um e-mail válido.",
+        };
+        setError(
+          (code && byCode[code]) ||
+            "Não foi possível iniciar o cadastro. Tente mais tarde."
+        );
+        setLoading(false);
+        return;
+      }
+
       const emailRedirectTo = getAuthCallbackUrl();
       const { error } = await supabase.auth.signUp({
         email,
@@ -47,7 +77,14 @@ export default function LoginPage() {
         },
       });
       if (error) {
-        setError(error.message);
+        const msg = error.message.toLowerCase();
+        if (msg.includes("rate limit")) {
+          setError(
+            "Limite de e-mails do provedor atingido. Aguarde cerca de 1 hora ou tente outro e-mail."
+          );
+        } else {
+          setError(error.message);
+        }
       } else {
         setMessage(
           "Conta criada! Verifique seu e-mail para confirmar o cadastro."
