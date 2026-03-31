@@ -1,14 +1,34 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSupabaseAnonKey, getSupabaseUrl } from "./env";
+import { getSupabaseConfigOrNull } from "./env";
+
+function isPublicAuthPath(pathname: string) {
+  return (
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/auth")
+  );
+}
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  try {
+    const config = getSupabaseConfigOrNull();
 
-  const supabase = createServerClient(
-    getSupabaseUrl(),
-    getSupabaseAnonKey(),
-    {
+    if (!config) {
+      if (isPublicAuthPath(request.nextUrl.pathname)) {
+        return NextResponse.next();
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set(
+        "error",
+        "missing_env"
+      );
+      return NextResponse.redirect(url);
+    }
+
+    let supabaseResponse = NextResponse.next({ request });
+
+    const supabase = createServerClient(config.url, config.key, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -23,28 +43,32 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+    });
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user && !isPublicAuthPath(request.nextUrl.pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
     }
-  );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (user && request.nextUrl.pathname === "/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
+    return supabaseResponse;
+  } catch (err) {
+    console.error("[middleware] updateSession", err);
+    if (isPublicAuthPath(request.nextUrl.pathname)) {
+      return NextResponse.next();
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-
-  if (user && request.nextUrl.pathname === "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
-
-  return supabaseResponse;
 }

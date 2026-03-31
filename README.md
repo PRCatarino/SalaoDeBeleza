@@ -31,7 +31,20 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sb_publishable_...
 
 (Alternativa: `NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...` — o app aceita qualquer uma das duas.)
 
-### 3. Instalar e Rodar
+### 3. Deploy na Vercel
+
+No painel do projeto **Settings → Environment Variables**, adicione **exatamente** (em Production / Preview se quiser):
+
+| Nome | Valor |
+|------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://SEU_REF.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | sua chave `sb_publishable_…` |
+
+*(Ou use `NEXT_PUBLIC_SUPABASE_ANON_KEY` com o JWT `eyJ…` no lugar da publishable.)*
+
+Sem essas duas variáveis o **middleware** falha ou não autentica. Depois de salvar, faça um **Redeploy**.
+
+### 4. Instalar e Rodar
 
 ```bash
 npm install
@@ -40,7 +53,7 @@ npm run dev
 
 Acesse `http://localhost:3000`
 
-### 4. Primeiro Acesso
+### 5. Primeiro Acesso
 
 1. Na tela de login, clique em "Cadastre-se"
 2. Crie sua conta com e-mail e senha
