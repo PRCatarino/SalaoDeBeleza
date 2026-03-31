@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier Concierge - Services Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#ffb68b",
+              "on-primary-fixed-variant": "#5b00c5",
+              "on-primary-container": "#dac5ff",
+              "surface": "#f8f9ff",
+              "primary-container": "#6d28d9",
+              "on-tertiary-fixed": "#321300",
+              "on-background": "#0b1c30",
+              "error": "#ba1a1a",
+              "surface-bright": "#f8f9ff",
+              "tertiary": "#6b3000",
+              "on-secondary": "#ffffff",
+              "on-surface": "#0b1c30",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#a7a5ff",
+              "surface-container-highest": "#d3e4fe",
+              "on-tertiary-container": "#ffc19e",
+              "inverse-primary": "#d3bbff",
+              "primary-fixed-dim": "#d3bbff",
+              "inverse-surface": "#213145",
+              "secondary": "#5654a8",
+              "outline-variant": "#ccc3d7",
+              "surface-variant": "#d3e4fe",
+              "outline": "#7b7486",
+              "inverse-on-surface": "#eaf1ff",
+              "on-secondary-fixed": "#100563",
+              "surface-dim": "#cbdbf5",
+              "on-error": "#ffffff",
+              "surface-container-high": "#dce9ff",
+              "on-primary-fixed": "#250059",
+              "tertiary-fixed": "#ffdbc8",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary-fixed": "#e2dfff",
+              "secondary-fixed-dim": "#c3c0ff",
+              "on-tertiary": "#ffffff",
+              "surface-tint": "#7331df",
+              "surface-container": "#e5eeff",
+              "on-surface-variant": "#4a4455",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#3e3c8f",
+              "background": "#f8f9ff",
+              "surface-container-low": "#eff4ff",
+              "primary": "#5300b7",
+              "on-secondary-container": "#393689",
+              "primary-fixed": "#ebddff",
+              "on-tertiary-fixed-variant": "#743400",
+              "tertiary-container": "#8f4200"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-manrope { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-slate-50 dark:bg-slate-900 p-4 gap-y-2">
+<div class="flex items-center gap-3 px-2 py-4 mb-6">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h2 class="font-manrope text-xl font-black text-slate-900 dark:text-slate-50 leading-none">The Atelier</h2>
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant mt-1">Premium Management</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Clients</span>
+</a>
+<!-- Active Tab: Services -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-violet-700 dark:text-violet-400 shadow-sm rounded-xl font-bold ring-2 ring-violet-500/20" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+<span class="text-sm">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-sm font-medium">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="text-sm font-medium">Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="text-sm font-medium">Marketing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-1">
+<button class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white py-3 px-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 active:scale-95 transition-all mb-4">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Booking
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 text-sm hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 text-sm hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50 flex justify-between items-center w-full px-8 py-4 shadow-[0_8px_32px_rgba(11,28,48,0.04)]">
+<div class="flex items-center gap-6 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/50" placeholder="Search services..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-slate-100 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-medium text-slate-700 hidden sm:block">Salon Manager</span>
+<div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-surface-container-highest">
+<img alt="Salon Manager Profile" class="w-full h-full object-cover" data-alt="professional portrait of a sophisticated woman with styled hair in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIxhDpMcvzXsIcfQ3p8xsD35t33C4k6b-NBYd6FAKfy61FELR1mFiInrAVXOo7UePABrwWiy9diBpG2y2g2ayssFCtIzZJgWj0PN7FHFCKbuxQgh86nk3o6JSWQIykG9cnoy6IuNhepKnGLgilg_PxZNL4lEMr7INOhorzMFLv7y3-TfE5kvhkFlx0hiE2NEyyrVmSMxpL5Z722FG2TKoLfsMx2-DUBRU0moyMAtJkSTpzZQcFUtfvI9RqhWjkskbxGuvX14yKoA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Body -->
+<div class="p-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div>
+<h1 class="font-manrope text-4xl font-extrabold text-on-surface tracking-tight mb-2">Service Menu</h1>
+<p class="text-on-surface-variant text-lg">Curate and manage your atelier's premium offerings.</p>
+</div>
+<button class="inline-flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white px-8 py-4 rounded-xl font-bold text-base shadow-xl shadow-primary/30 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                    Add New Service
+                </button>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center gap-3 mb-8">
+<button class="px-5 py-2.5 bg-primary text-white rounded-full text-sm font-semibold shadow-md">All Services</button>
+<button class="px-5 py-2.5 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest rounded-full text-sm font-medium transition-all">Hair</button>
+<button class="px-5 py-2.5 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest rounded-full text-sm font-medium transition-all">Nails</button>
+<button class="px-5 py-2.5 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest rounded-full text-sm font-medium transition-all">Aesthetics</button>
+<button class="px-5 py-2.5 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-highest rounded-full text-sm font-medium transition-all">Massage</button>
+<div class="ml-auto flex items-center gap-2 text-on-surface-variant">
+<span class="text-xs uppercase tracking-widest font-bold">Showing:</span>
+<span class="text-sm font-semibold text-primary">12 Services</span>
+</div>
+</div>
+<!-- Bento Grid of Services -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Service Card 1 -->
+<div class="group bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(11,28,48,0.03)] border border-transparent hover:border-primary-fixed-dim transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl overflow-hidden">
+<img alt="Hair Styling" class="w-full h-full object-cover" data-alt="close-up of stylist working on long blonde hair in a bright luxury salon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7fEZRtjbRcviK--K7-YOeD1XNViV7BxgJq3oVQ4ElLdsJFEzVXeAdZfG2Kgvl7Cp0uL52vlMz8Jb_EKFTwLICubUoX5c0Hzjc57Ghf7-4JQZd7mjV__gAOIA5iEOOskS_c0sOJiIrp8monGeUwoWDrkxutGRkkAu5YUgx0-d4AKzFGNIKENtdeTUgXXklvsUWGk4K8Gvn_Z62PDkjD7jkT7vg5sjQ2pp7mFtR4oUZb-IHn6Gq6FqZmTdyb9dHTQwPplXXOOtfRg"/>
+</div>
+<div class="flex gap-1">
+<button class="p-2 text-outline hover:text-primary hover:bg-primary-fixed transition-colors rounded-lg">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-outline hover:text-error hover:bg-error-container transition-colors rounded-lg">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-4">
+<span class="text-[0.6875rem] uppercase tracking-widest font-bold text-primary bg-primary-fixed px-2 py-1 rounded">Hair</span>
+<h3 class="font-manrope text-xl font-bold text-on-surface mt-2">Signature Balayage</h3>
+</div>
+<div class="flex items-center gap-6 mb-6 py-4 border-y border-surface-container">
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Duration</span>
+<span class="text-sm font-semibold text-on-surface">3h 45m</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Price</span>
+<span class="text-sm font-bold text-on-surface">$245.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[0.6875rem] font-medium text-on-surface-variant">Online Booking</span>
+</div>
+<!-- Toggle Switch -->
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors focus:outline-none ring-2 ring-primary/10">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+</button>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="group bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(11,28,48,0.03)] border border-transparent hover:border-primary-fixed-dim transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl overflow-hidden">
+<img alt="Massage" class="w-full h-full object-cover" data-alt="zen aesthetic showing hot stones and orchid flower on dark pebbles with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAbB-5KRX1BRF_Q6844x-JWBFivEU5GNhU-nrjbmUCchpP1LZGkFEQ2CcxmbedclXTHld454J5eHUXKVpfBuU6qAtZQuEkRQENpF66LaiByT6TloOAcNVYzAScpdVJVluGXppfJdEXgmgzGIBgkaS9LX2TfOnOhFAE4SRUVeh-xKr2YTiq6cuZC-ujFVX7tPP7WIQm-eqPcn5trQtGMGOLXz3ZpR14T05ibStPydX-5s0tb_l__Yqcl5E0C0-qE50_x2cZ-eSECA"/>
+</div>
+<div class="flex gap-1">
+<button class="p-2 text-outline hover:text-primary hover:bg-primary-fixed transition-colors rounded-lg">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-outline hover:text-error hover:bg-error-container transition-colors rounded-lg">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-4">
+<span class="text-[0.6875rem] uppercase tracking-widest font-bold text-tertiary-container bg-tertiary-fixed px-2 py-1 rounded">Massage</span>
+<h3 class="font-manrope text-xl font-bold text-on-surface mt-2">Deep Tissue Therapy</h3>
+</div>
+<div class="flex items-center gap-6 mb-6 py-4 border-y border-surface-container">
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Duration</span>
+<span class="text-sm font-semibold text-on-surface">1h 15m</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Price</span>
+<span class="text-sm font-bold text-on-surface">$120.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[0.6875rem] font-medium text-on-surface-variant">Online Booking</span>
+</div>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-colors focus:outline-none ring-2 ring-primary/10">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6"></span>
+</button>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="group bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(11,28,48,0.03)] border border-transparent hover:border-primary-fixed-dim transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl overflow-hidden">
+<img alt="Aesthetics" class="w-full h-full object-cover" data-alt="close-up of luxury skincare products on a marble surface with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc1vAX_PJurjUyxR3SvGUz7dYHcHA8hGJFRzxpYWSPbj06icgKdpX3UdzZPJTNuWbsqzlzGuvYSaCmtZBJCqQKSTQUfLItnfXoP-xhk-bWrjYNxKS1E3DTFwmxf8Qn6mD5kGNn0exDz-JeoCG-kkljeh_k_TeTfDZdmCfUIN6u5Dot1RLE0AsJ0c00DdtxCFkCUzgvckuwGz7ZqXnqew1UD7xsoKiN6B5Kx6Q7CqAYVBeN6Zfn0E_413q1805hDVhhl8GtYWImOA"/>
+</div>
+<div class="flex gap-1">
+<button class="p-2 text-outline hover:text-primary hover:bg-primary-fixed transition-colors rounded-lg">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-outline hover:text-error hover:bg-error-container transition-colors rounded-lg">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-4">
+<span class="text-[0.6875rem] uppercase tracking-widest font-bold text-secondary-fixed-variant bg-secondary-fixed px-2 py-1 rounded">Aesthetics</span>
+<h3 class="font-manrope text-xl font-bold text-on-surface mt-2">Hydra-Radiance Facial</h3>
+</div>
+<div class="flex items-center gap-6 mb-6 py-4 border-y border-surface-container">
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Duration</span>
+<span class="text-sm font-semibold text-on-surface">1h 00m</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[0.625rem] uppercase tracking-tighter text-outline-variant font-bold">Price</span>
+<span class="text-sm font-bold text-on-surface">$185.00</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[0.6875rem] font-medium text-on-surface-variant">Online Booking</span>
+</div>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-surface-container-highest transition-colors focus:outline-none ring-1 ring-outline-variant">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"></span>
+</button>
+</div>
+</div>
+<!-- Empty State Placeholder (Hidden normally, rendered if no search results) -->
+<div class="hidden col-span-full flex-col items-center justify-center py-24 bg-surface-container-low rounded-3xl border-2 border-dashed border-outline-variant">
+<div class="w-20 h-20 bg-surface-container-highest rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-4xl text-outline">content_cut</span>
+</div>
+<h3 class="font-manrope text-2xl font-bold text-on-surface mb-2">No services found</h3>
+<p class="text-on-surface-variant mb-8 text-center max-w-xs">Try adjusting your filters or search keywords to find what you're looking for.</p>
+<button class="text-primary font-bold hover:underline">Clear all filters</button>
+</div>
+</div>
+<!-- Footer Metrics Section (Editorial Pull Quotes Style) -->
+<div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 bg-surface-container rounded-3xl relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-5 transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-9xl">trending_up</span>
+</div>
+<p class="text-[0.6875rem] uppercase tracking-widest font-black text-primary mb-4">Top Performer</p>
+<h4 class="font-manrope text-5xl font-extrabold text-on-surface mb-2">84%</h4>
+<p class="text-on-surface-variant font-medium">Of revenue from 'Hair' services this month.</p>
+</div>
+<div class="p-8 bg-surface-container-high rounded-3xl relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-5 transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-9xl">schedule</span>
+</div>
+<p class="text-[0.6875rem] uppercase tracking-widest font-black text-secondary mb-4">Avg Duration</p>
+<h4 class="font-manrope text-5xl font-extrabold text-on-surface mb-2">92m</h4>
+<p class="text-on-surface-variant font-medium">Standard slot time across all categories.</p>
+</div>
+<div class="p-8 bg-primary text-on-primary-container rounded-3xl relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-9xl text-white">bolt</span>
+</div>
+<p class="text-[0.6875rem] uppercase tracking-widest font-black text-on-primary mb-4">Active Listings</p>
+<h4 class="font-manrope text-5xl font-extrabold text-white mb-2">12/15</h4>
+<p class="text-white/80 font-medium">Services are currently visible for online booking.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation (Shared Component) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[10px] font-bold">Agenda</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+<span class="text-[10px] font-bold">Services</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold">Clients</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Menu</span>
+</a>
+</nav>
+</body></html>

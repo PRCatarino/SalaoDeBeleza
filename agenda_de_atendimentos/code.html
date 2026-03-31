@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#7331df",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed-dim": "#ffb68b",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#a7a5ff",
+              "secondary-fixed": "#e2dfff",
+              "error-container": "#ffdad6",
+              "on-error": "#ffffff",
+              "surface-container-high": "#dce9ff",
+              "tertiary": "#6b3000",
+              "on-primary": "#ffffff",
+              "on-background": "#0b1c30",
+              "primary": "#5300b7",
+              "on-secondary": "#ffffff",
+              "inverse-surface": "#213145",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#cbdbf5",
+              "on-tertiary-container": "#ffc19e",
+              "surface-bright": "#f8f9ff",
+              "tertiary-container": "#8f4200",
+              "secondary-fixed-dim": "#c3c0ff",
+              "surface-container-highest": "#d3e4fe",
+              "secondary": "#5654a8",
+              "inverse-primary": "#d3bbff",
+              "on-surface-variant": "#4a4455",
+              "on-secondary-fixed-variant": "#3e3c8f",
+              "on-primary-container": "#dac5ff",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "outline": "#7b7486",
+              "primary-fixed-dim": "#d3bbff",
+              "outline-variant": "#ccc3d7",
+              "on-tertiary-fixed": "#321300",
+              "primary-container": "#6d28d9",
+              "primary-fixed": "#ebddff",
+              "on-tertiary-fixed-variant": "#743400",
+              "surface-variant": "#d3e4fe",
+              "on-secondary-fixed": "#100563",
+              "surface-container": "#e5eeff",
+              "on-surface": "#0b1c30",
+              "on-primary-fixed-variant": "#5b00c5",
+              "surface-container-low": "#eff4ff",
+              "on-error-container": "#93000a",
+              "tertiary-fixed": "#ffdbc8",
+              "on-primary-fixed": "#250059",
+              "on-secondary-container": "#393689",
+              "background": "#f8f9ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #dce9ff; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-slate-50 dark:bg-slate-950 flex flex-col z-50 overflow-y-auto">
+<div class="p-6">
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Atelier Management</h1>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Premium Aesthetics</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-violet-100/50 text-violet-700 font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-medium">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-medium">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-medium">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-medium">Marketing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-200/50 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<button class="w-full bg-primary-container text-white py-4 px-4 rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 duration-150">
+<span class="material-symbols-outlined">add</span>
+                New Appointment
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="h-16 px-8 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-xl z-40">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 w-64 text-sm focus:ring-2 focus:ring-primary transition-all" placeholder="Search appointments..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-surface-container-high p-1 rounded-lg">
+<button class="px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow-sm text-primary">DAILY</button>
+<button class="px-4 py-1.5 text-xs font-bold rounded-md text-on-surface-variant hover:text-on-surface transition-colors">WEEKLY</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/30 mx-2"></div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/10" data-alt="professional portrait of a high-end salon manager with clean studio lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ_KoSpJdiaOOmq1Htd0KhpIIUTe6ridSwqplIGnkwq_1sxA6Y55lnmkv6qUv-NYdUbdBxVeY7D2LH-R6kDpz6CJ4zgJV4ix5WIUfc9NKxYZI3hHEitCa7ZF4JPmcme2Bz7uuA7dZOOHmoA_rBZaIq-doHrwo1fVzDoW3SvUt-8kxQMEBGQRiwCVjF_lkpm89Tpvz6hpUyvDp2tEt45r-dsVLEF5T-WTUOFyW6p1ku8dPAvMVT2T0VviSkzSpuIX_CbBNutIawlA"/>
+</div>
+</header>
+<!-- Agenda Dashboard Grid -->
+<div class="flex-1 p-8 grid grid-cols-12 gap-6 overflow-hidden">
+<!-- Left Panel: Mini Calendar & Staff Filter -->
+<div class="col-span-3 space-y-6">
+<!-- Mini Calendar -->
+<section class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-on-surface">October 2024</h3>
+<div class="flex gap-1">
+<button class="p-1 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-y-2 text-center text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-2">
+<span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+</div>
+<div class="grid grid-cols-7 gap-y-1 text-center text-sm">
+<!-- Dates placeholders -->
+<span class="py-1.5 text-outline-variant">29</span>
+<span class="py-1.5 text-outline-variant">30</span>
+<span class="py-1.5 font-medium">1</span>
+<span class="py-1.5 font-medium">2</span>
+<span class="py-1.5 font-medium">3</span>
+<span class="py-1.5 font-medium">4</span>
+<span class="py-1.5 font-medium">5</span>
+<span class="py-1.5 font-medium">6</span>
+<span class="py-1.5 font-medium">7</span>
+<span class="py-1.5 font-medium">8</span>
+<span class="py-1.5 font-medium">9</span>
+<span class="py-1.5 font-medium">10</span>
+<span class="py-1.5 font-medium">11</span>
+<span class="py-1.5 font-medium bg-primary text-white rounded-lg shadow-md shadow-primary/30">12</span>
+<span class="py-1.5 font-medium">13</span>
+<span class="py-1.5 font-medium">14</span>
+<span class="py-1.5 font-medium">15</span>
+<span class="py-1.5 font-medium">16</span>
+<span class="py-1.5 font-medium">17</span>
+<span class="py-1.5 font-medium">18</span>
+<span class="py-1.5 font-medium">19</span>
+</div>
+</section>
+<!-- Staff Filters -->
+<section class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+<h3 class="font-bold text-on-surface mb-4">Staff Members</h3>
+<div class="space-y-4">
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center border-2 border-violet-500">
+<img class="w-full h-full rounded-full object-cover" data-alt="portrait of a male senior stylist with a trendy haircut in a minimalist salon setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAznwl0aWpuWJ-MiO1bkzNnNbEHcaSn45ScdJuG-lFU7pRi3KVr3UF45Yn1Yo1W2TfLWz_5dvdxuqdUNTU4bDGQ_MqPO0uxfqfX7Twq_IK6GWeAALBErS7DkP3A1_Owzm6XOjrem4djlsNcONKYE0qsoYEuFsMfvX-W6CnQuydXGGPY6JmD2BwfPJ1uw59jvqg8ZsntZ-PDv_YVMZOurB_cLDV9PAf48Jz_t03D7YbppUubLhawHrU78M5MVF3gCn0ErSQg5o9Y0g"/>
+</div>
+<div>
+<p class="text-sm font-semibold">Julian V.</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Senior Stylist</p>
+</div>
+</div>
+<input checked="" class="rounded text-primary focus:ring-primary h-5 w-5 bg-surface-container" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center border-2 border-emerald-500">
+<img class="w-full h-full rounded-full object-cover" data-alt="portrait of a female nail artist in professional attire with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBriNJuNqUhOX8E15dOARUMyea_uDQY-_9AnU1mjG9RCcfPCdKE8MH6WkLvmJvl0sfaYkltOcyiZ_-w9vYKdmcilsdhK9Ne_7iQTXfnnqxgn2gVwJ7tygKnCUblfFq_tTn2FBBMPCsMG3EIq01b52oS4x7IkUVULcg9MlPPd-KyBy4hrQZhm70JybsZBnL4RGkmDSZtaNNbIfE8Klyz9sMww7PIm36mq5B6NPOKU_4wSgggML0wKMZA2_GPak_GpoUzeWrXxgY3kw"/>
+</div>
+<div>
+<p class="text-sm font-semibold">Elena R.</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Nail Artist</p>
+</div>
+</div>
+<input checked="" class="rounded text-emerald-600 focus:ring-emerald-600 h-5 w-5 bg-surface-container" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center border-2 border-amber-500">
+<img class="w-full h-full rounded-full object-cover" data-alt="portrait of a male barber with a well-groomed beard in an upscale barbershop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN4ZkNVq_mIWlDzsXCAE3i8JnDRfp4FP7VpHWAVza4NseILRXy3StFpOtddIMqJzIr_a0ivWpAl0WT122SUXKVW98bOwUemTTXr7G7nkE05jqCVaX1V1gNnnYdW78kpFUnb0poZQKC3qW-cMBZ3EzWJ5-lalGReNBBzvOyej6tYMTXShG-XihO5gAbu5nrtbviRdXHwOduY6K_3xBKveMnl0GZ8lDLQQXE7l4ldpnk6IBEVWIWJ5L3Pr6SQ0go2fviDLqXoO2n2A"/>
+</div>
+<div>
+<p class="text-sm font-semibold">Marco S.</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Master Barber</p>
+</div>
+</div>
+<input checked="" class="rounded text-amber-600 focus:ring-amber-600 h-5 w-5 bg-surface-container" type="checkbox"/>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Panel: Google Calendar Style View -->
+<div class="col-span-9 bg-surface-container-lowest rounded-2xl shadow-[0_8px_32px_rgba(11,28,48,0.06)] flex flex-col overflow-hidden border border-surface-container-high">
+<!-- Grid Header -->
+<div class="grid grid-cols-12 border-b border-surface-container-high bg-white">
+<div class="col-span-1 border-r border-surface-container-high flex items-center justify-center p-4">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">EST</span>
+</div>
+<!-- Professional Columns Headers -->
+<div class="col-span-11 grid grid-cols-3">
+<div class="p-4 flex flex-col items-center gap-1 border-r border-surface-container-high">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Senior Stylist</p>
+<p class="text-sm font-bold">Julian V.</p>
+</div>
+<div class="p-4 flex flex-col items-center gap-1 border-r border-surface-container-high">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Nail Artist</p>
+<p class="text-sm font-bold">Elena R.</p>
+</div>
+<div class="p-4 flex flex-col items-center gap-1">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Master Barber</p>
+<p class="text-sm font-bold">Marco S.</p>
+</div>
+</div>
+</div>
+<!-- Scrollable Grid Body -->
+<div class="flex-1 overflow-y-auto custom-scrollbar relative">
+<div class="grid grid-cols-12">
+<!-- Time Column -->
+<div class="col-span-1 border-r border-surface-container-high">
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">09:00 AM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">10:00 AM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">11:00 AM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">12:00 PM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">01:00 PM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">02:00 PM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">03:00 PM</span></div>
+<div class="h-20 flex items-start justify-center pt-2"><span class="text-[10px] font-bold text-on-surface-variant">04:00 PM</span></div>
+</div>
+<!-- Slots Grid -->
+<div class="col-span-11 grid grid-cols-3 relative">
+<!-- Julian's Column -->
+<div class="border-r border-surface-container-high relative">
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<!-- Appointment Block -->
+<div class="h-full w-full bg-primary/10 border-l-4 border-primary rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab active:cursor-grabbing transition-transform active:scale-95">
+<div>
+<p class="font-bold text-primary">Balayage &amp; Cut</p>
+<p class="text-[10px] text-on-surface-variant">Clara Thompson</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">10:00 - 11:30</span>
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2"></div>
+<div class="h-20 border-b border-surface-container-high/50 p-2 relative">
+<!-- Drag and Drop Placeholder Indicator -->
+<div class="absolute inset-2 border-2 border-dashed border-primary/30 rounded-lg flex items-center justify-center bg-primary/5">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Move Here</p>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+</div>
+<!-- Elena's Column -->
+<div class="border-r border-surface-container-high relative">
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<!-- Appointment Block -->
+<div class="h-full w-full bg-emerald-50 border-l-4 border-emerald-500 rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab">
+<div>
+<p class="font-bold text-emerald-700">Gel Manicure</p>
+<p class="text-[10px] text-on-surface-variant">Sasha Lane</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">11:00 - 12:00</span>
+<span class="material-symbols-outlined text-sm text-emerald-400">lock</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<div class="h-full w-full bg-emerald-50 border-l-4 border-emerald-500 rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab">
+<div>
+<p class="font-bold text-emerald-700">Nail Extensions</p>
+<p class="text-[10px] text-on-surface-variant">Beatrice O.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">12:00 - 01:30</span>
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+</div>
+<!-- Marco's Column -->
+<div class="relative">
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<div class="h-full w-full bg-amber-50 border-l-4 border-amber-500 rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab">
+<div>
+<p class="font-bold text-amber-800">Classic Haircut</p>
+<p class="text-[10px] text-on-surface-variant">David Miller</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">09:00 - 10:00</span>
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<div class="h-full w-full bg-amber-50 border-l-4 border-amber-500 rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab">
+<div>
+<p class="font-bold text-amber-800">Beard Trim</p>
+<p class="text-[10px] text-on-surface-variant">Alex Chen</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">11:00 - 11:45</span>
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 p-2">
+<div class="h-full w-full bg-amber-50 border-l-4 border-amber-500 rounded-lg p-2 text-xs flex flex-col justify-between shadow-sm cursor-grab">
+<div>
+<p class="font-bold text-amber-800">Hot Towel Shave</p>
+<p class="text-[10px] text-on-surface-variant">Robert J.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-[9px] font-bold bg-white/50 px-1 rounded uppercase">03:00 - 04:00</span>
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+</div>
+<div class="h-20 border-b border-surface-container-high/50 flex items-center justify-center group cursor-pointer hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button for Mobile Context -->
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-primary-container text-white shadow-2xl flex items-center justify-center md:hidden z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+</body></html>

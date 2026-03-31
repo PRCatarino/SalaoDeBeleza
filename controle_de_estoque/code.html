@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inventory Management | Atelier Concierge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#ffb68b",
+              "on-primary-fixed-variant": "#5b00c5",
+              "on-primary-container": "#dac5ff",
+              "surface": "#f8f9ff",
+              "primary-container": "#6d28d9",
+              "on-tertiary-fixed": "#321300",
+              "on-background": "#0b1c30",
+              "error": "#ba1a1a",
+              "surface-bright": "#f8f9ff",
+              "tertiary": "#6b3000",
+              "on-secondary": "#ffffff",
+              "on-surface": "#0b1c30",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#a7a5ff",
+              "surface-container-highest": "#d3e4fe",
+              "on-tertiary-container": "#ffc19e",
+              "inverse-primary": "#d3bbff",
+              "primary-fixed-dim": "#d3bbff",
+              "inverse-surface": "#213145",
+              "secondary": "#5654a8",
+              "outline-variant": "#ccc3d7",
+              "surface-variant": "#d3e4fe",
+              "outline": "#7b7486",
+              "inverse-on-surface": "#eaf1ff",
+              "on-secondary-fixed": "#100563",
+              "surface-dim": "#cbdbf5",
+              "on-error": "#ffffff",
+              "surface-container-high": "#dce9ff",
+              "on-primary-fixed": "#250059",
+              "tertiary-fixed": "#ffdbc8",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary-fixed": "#e2dfff",
+              "secondary-fixed-dim": "#c3c0ff",
+              "on-tertiary": "#ffffff",
+              "surface-tint": "#7331df",
+              "surface-container": "#e5eeff",
+              "on-surface-variant": "#4a4455",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#3e3c8f",
+              "background": "#f8f9ff",
+              "surface-container-low": "#eff4ff",
+              "primary": "#5300b7",
+              "on-secondary-container": "#393689",
+              "primary-fixed": "#ebddff",
+              "on-tertiary-fixed-variant": "#743400",
+              "tertiary-container": "#8f4200"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3, .font-manrope { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-slate-50 dark:bg-slate-900 flex flex-col p-4 gap-y-2">
+<div class="flex items-center gap-3 px-2 mb-8 mt-2">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+</div>
+<div>
+<h2 class="font-manrope text-xl font-black text-slate-900 dark:text-slate-50 leading-none">The Atelier</h2>
+<p class="text-[0.6875rem] uppercase tracking-wider text-on-surface-variant font-bold">Premium Management</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[1.125rem]">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[1.125rem]">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[1.125rem]">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="text-[1.125rem]">Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[1.125rem]">Financials</span>
+</a>
+<!-- Active State: Inventory -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white shadow-sm rounded-xl font-bold text-violet-700 ring-2 ring-violet-500/10" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="text-[1.125rem]">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="text-[1.125rem]">Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="text-[1.125rem]">Marketing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[1.125rem]">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200 flex flex-col gap-y-1">
+<button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 active:scale-95 transition-all mb-4">
+                New Booking
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="text-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-200/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-30 bg-white/80 backdrop-blur-xl px-8 py-4 flex justify-between items-center shadow-[0_8px_32px_rgba(11,28,48,0.04)]">
+<div class="flex items-center gap-4">
+<h1 class="text-2xl font-manrope font-extrabold tracking-tight text-on-surface">Inventory Management</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary w-64 text-sm" placeholder="Search SKU, name, or category..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-slate-200"></div>
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10" data-alt="Close-up portrait of a professional salon manager with a friendly smile in a modern studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAueY4l7AZrefTw2UuMIb98Gc__3BaTklZ-ZhNauLpD8UZ1Ph24pe9QdGoDJGL1Usc6NRYt4NvKV5F2G4ynY43ufbDKFmZtmPLWemBVaME07qUjfXRGnckduTDd7SH4DeJk0c1_6SMg3S3VjFUY7BU0pZE6jZ-cDbIUvRhEjiqhix-xpNYdpQmDWlI_-bhOOz7th2GkZ8my3IDm8Um43NNohfFOda35LWl2IndUUVj9H15EWJZ8id3e4o5rxu6IGPElhmQuDiK2Bg"/>
+<div class="hidden lg:block">
+<p class="text-xs font-bold text-on-surface leading-none">Elena Rossi</p>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Manager</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 space-y-8">
+<!-- Low Stock Banner -->
+<div class="bg-error-container/30 border-l-4 border-error p-5 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-error/10 text-error rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<h3 class="font-bold text-on-error-container">Critical Stock Alert</h3>
+<p class="text-sm text-on-error-container/80">3 products are currently below minimum levels. Reordering is recommended.</p>
+</div>
+</div>
+<button class="px-5 py-2 bg-error text-white rounded-lg text-sm font-bold shadow-sm active:scale-95 transition-all">
+                    Generate Purchase Order
+                </button>
+</div>
+<!-- Stats Overview - Editorial Style -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.02)]">
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total SKU Count</p>
+<p class="text-4xl font-manrope font-extrabold text-on-surface">142</p>
+<div class="mt-4 flex items-center gap-2 text-xs font-medium text-emerald-600">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12 this month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8_32px_rgba(11,28,48,0.02)]">
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Inventory Value</p>
+<p class="text-4xl font-manrope font-extrabold text-on-surface">$12,480</p>
+<p class="mt-4 text-xs font-medium text-on-surface-variant">Asset valuation current</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.02)]">
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Low Stock Alerts</p>
+<p class="text-4xl font-manrope font-extrabold text-error">03</p>
+<p class="mt-4 text-xs font-medium text-on-surface-variant">Requires attention</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.02)]">
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Out of Stock</p>
+<p class="text-4xl font-manrope font-extrabold text-on-surface">00</p>
+<p class="mt-4 text-xs font-medium text-on-surface-variant">All items available</p>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-primary-container text-white rounded-lg text-sm font-semibold flex items-center gap-2">
+                        All Products
+                    </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-high transition-colors">
+                        Shampoos
+                    </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-high transition-colors">
+                        Oils &amp; Serums
+                    </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-high transition-colors">
+                        Professional Tools
+                    </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-high transition-colors">
+                        Retail
+                    </button>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 bg-surface-container-highest text-on-primary-fixed-variant rounded-xl text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                        Log Purchase
+                    </button>
+<button class="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Update Stock
+                    </button>
+</div>
+</div>
+<!-- Inventory Table - Tonal Stacking -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.04)] overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Product Name</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">SKU</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Category</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Stock Level</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Unit Price</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Status</th>
+<th class="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Product 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Minimalist luxury shampoo bottle in a dark glass container with elegant white typography label" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3yWw1lL-yVJuS5Z3qBx-Pxn2sybPPHoCRtdNSDAEfN0W3-IDLHbn13KEWI_cTit2_HdyVeineFCsXehFCQiz9B-m7lzlU-27Prtp68n5DTg-lEtRdSvtxcEVOrbcDH4H1Iw7vQbwMwa9BDFRUm7L3m-EDXuSs8W_eovvdmyYt_4dfMYUwqjenRQcth81ZP76wwKkwDWjKja7EXY1Wftce0BObVvMix9fZsa6FsngjXXp5kkraP-RLxMpMrToq1VB8_KVW7ADHNg"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Signature Hydrating Shampoo</p>
+<p class="text-xs text-on-surface-variant">500ml Retail Pack</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">SH-HY-500</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-secondary-container uppercase">Shampoos</span>
+</td>
+<td class="px-6 py-5">
+<div class="w-full max-w-[100px]">
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-on-surface">42 units</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[70%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-bold text-on-surface">$32.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    In Stock
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Product 2 (Low Stock) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Luxury facial oil serum in a frosted glass dropper bottle on a clean minimalist surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjQnCqYqkSiQVHIQHsIzRh_Ju05F-Igdvr8bUpFyUoMQLtHGlpvY_2GtmoYiSmwNQBxs3lU_zTZkjXJaMgEqizkvnV26xAbJP4IJMizqnDaiGc0l-wtwa6aUjKzzoxz-unZE9HE3jbEH6JHrCC9n2x2rLBzoMBtyNKV3RhhJva2R6u3RqLuvAg71dfCf68l0wTuXHgF3UAxTsX3qWREVJIsDm0y_3YRgYfWuXNM1CnsgoBRIf_q9tikLQdtaaEkrdAJokrjn7Ycw"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Argan Infusion Oil</p>
+<p class="text-xs text-on-surface-variant">30ml Professional Use</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">OL-AR-030</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-secondary-container uppercase">Oils</span>
+</td>
+<td class="px-6 py-5">
+<div class="w-full max-w-[100px]">
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-error">8 units</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-error w-[20%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-bold text-on-surface">$45.50</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Low Stock
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Product 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close-up of professional hairdressing scissors with a sleek matte finish resting on a leather roll" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBir9YYhdTDrzY10RVfab2YQiISZv06QobOBiAOb9kjswXMCGirJ1jEU6PtuYlECg4Usm3giej9humCzEIN-O9ePwb7YutsRGTp1x56zVlGKf69RosIH953rqH-OIf0lAowJ_ntJQtf9GHnBdKkmsaUflVgNMGjX0Z_5aXYOcIIykPZIEyGZRDLY7akRbJUr2OgIjRH4O3GmKlfpogN6HHU6996lbVYFblYkcjhoOh5mHL5DXrx-lzfcbv3DR8xZN5V5Z2u4yQOTg"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Professional Shears Elite</p>
+<p class="text-xs text-on-surface-variant">Japanese Steel - 6 inch</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">TL-SH-E06</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-secondary-container uppercase">Tools</span>
+</td>
+<td class="px-6 py-5">
+<div class="w-full max-w-[100px]">
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-on-surface">15 units</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[50%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-bold text-on-surface">$289.00</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    In Stock
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Product 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A range of professional hair color tubes arranged neatly by shade gradient in a bright studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpDHnh8sxHRk310TnA_Hdhcoj3F3q4_tygK55O1Jz59os9hn4YM_azyrNwG77dXSROeLy3sgA9NOG5bMrdswRAbx6Gu1GNwAJ1liND90VfeNxinyAxCrTR7xgg_wicy4UxoK2dC4A-lPHf7Z6Neht65Wqiq9-jAEoZVz-XUwPleUbATy6HajtktwbwELJx4Dnsz8vlhHQHhwCMGwFXt-0TWJZkp1DK1A9mCnDVPEzvGYMef9YAROaRTHS-YTghmB1Jbp7Pq-VDEQ"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Vivid Color Pro Pack</p>
+<p class="text-xs text-on-surface-variant">Electric Blue 100ml</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">CL-EB-100</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-secondary-container uppercase">Professional</span>
+</td>
+<td class="px-6 py-5">
+<div class="w-full max-w-[100px]">
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-on-surface">28 units</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[60%]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 font-bold text-on-surface">$18.75</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    In Stock
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Table Footer -->
+<div class="px-6 py-4 bg-surface-container-low/30 border-t border-slate-100 flex items-center justify-between">
+<p class="text-xs text-on-surface-variant font-medium">Showing 4 of 142 products</p>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-on-surface-variant disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-xs font-bold text-on-surface-variant hover:bg-white">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-xs font-bold text-on-surface-variant hover:bg-white">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-on-surface-variant hover:bg-white">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Help / Insights Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
+<div class="md:col-span-2 bg-primary-fixed rounded-xl p-8 flex flex-col justify-center relative overflow-hidden">
+<div class="relative z-10 max-w-lg">
+<h2 class="text-2xl font-manrope font-extrabold text-on-primary-fixed mb-2">Optimize your replenishment</h2>
+<p class="text-on-primary-fixed-variant mb-6">Our AI suggests consolidating your orders for Shampoos and Conditioners to save 12% on shipping fees this month.</p>
+<button class="px-6 py-3 bg-on-primary-fixed text-primary-fixed rounded-xl font-bold text-sm shadow-xl active:scale-95 transition-all">
+                            View Logistics Report
+                        </button>
+</div>
+<!-- Decorative Element -->
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[160px] text-on-primary-fixed/5 rotate-12">local_shipping</span>
+</div>
+<div class="bg-surface-container-highest rounded-xl p-6 flex flex-col gap-4">
+<p class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">Upcoming Deliveries</p>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">package</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">L'Oréal Pro Order</p>
+<p class="text-[10px] text-on-surface-variant">Scheduled: Tomorrow</p>
+</div>
+</div>
+<span class="text-[10px] font-bold text-on-primary-fixed-variant bg-white px-2 py-0.5 rounded">ETA 10:00</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">package</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Salon Supply Co.</p>
+<p class="text-[10px] text-on-surface-variant">Scheduled: Friday</p>
+</div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant bg-white px-2 py-0.5 rounded">PENDING</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
