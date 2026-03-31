@@ -27,6 +27,7 @@ Sistema completo de gestão para salões de beleza com Next.js e Supabase.
 Copie `.env.local.example` para `.env.local` e preencha a URL do projeto e a chave pública (publishable **ou** anon JWT):
 
 ```
+NEXT_PUBLIC_SITE_URL=https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app
 NEXT_PUBLIC_SUPABASE_URL=https://SEU_PROJETO.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sb_publishable_...
 ```
@@ -39,12 +40,31 @@ No painel do projeto **Settings → Environment Variables**, adicione **exatamen
 
 | Nome | Valor |
 |------|--------|
+| `NEXT_PUBLIC_SITE_URL` | `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://SEU_REF.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | sua chave `sb_publishable_…` |
 
 *(Ou use `NEXT_PUBLIC_SUPABASE_ANON_KEY` com o JWT `eyJ…` no lugar da publishable.)*
 
 Sem essas duas variáveis o **middleware** falha ou não autentica. Depois de salvar, faça um **Redeploy**.
+
+Adicione também **`NEXT_PUBLIC_SITE_URL`** com a URL pública do app (sem barra no final), ex.: `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app`. Assim o link **“Confirmar e-mail”** volta para a Vercel, e não para `localhost`.
+
+#### Confirmação de e-mail (não cair em localhost)
+
+No Supabase: **Authentication → URL Configuration**
+
+| Campo | Valor sugerido |
+|--------|----------------|
+| **Site URL** | `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app` (ou domínio customizado) |
+| **Redirect URLs** | Inclua todas as URLs abaixo (uma por linha): |
+
+```
+http://localhost:3000/auth/callback
+https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app/auth/callback
+```
+
+Sem isso, o Supabase pode gerar links apontando só para o Site URL antigo (ex.: localhost). Depois de alterar, peça um novo e-mail de confirmação ou cadastre de novo.
 
 ### 4. Instalar e Rodar
 
