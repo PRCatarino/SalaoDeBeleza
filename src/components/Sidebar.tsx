@@ -12,6 +12,7 @@ const navItems = [
   { href: "/financials", icon: "payments", label: "Financeiro" },
   { href: "/inventory", icon: "inventory_2", label: "Estoque" },
   { href: "/team", icon: "badge", label: "Equipe" },
+  { href: "/profile", icon: "person", label: "Perfil e Loja" },
 ];
 
 export default function Sidebar() {

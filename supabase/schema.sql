@@ -3,13 +3,19 @@
 -- Execute this in Supabase SQL Editor
 -- ============================================
 
--- 1. Profiles (extends auth.users)
+-- 1. Profiles (extends auth.users) + dados da loja
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text not null,
   avatar_url text,
   role text not null default 'admin' check (role in ('admin', 'manager')),
   salon_name text not null default 'Meu Salão',
+  salon_address text,
+  store_description text,
+  cnpj text,
+  owner_cpf text,
+  store_phone text,
+  store_email text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -119,8 +125,9 @@ alter table public.appointments enable row level security;
 alter table public.inventory_products enable row level security;
 alter table public.transactions enable row level security;
 
--- Profiles: users can read/update their own profile
+-- Profiles: users can read/update/insert their own profile
 create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
+create policy "Users can insert own profile" on public.profiles for insert to authenticated with check (auth.uid() = id);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
 -- All other tables: authenticated users have full access (single-salon setup)
@@ -196,6 +203,25 @@ create trigger set_updated_at before update on public.services for each row exec
 create trigger set_updated_at before update on public.clients for each row execute procedure public.update_updated_at();
 create trigger set_updated_at before update on public.appointments for each row execute procedure public.update_updated_at();
 create trigger set_updated_at before update on public.inventory_products for each row execute procedure public.update_updated_at();
+
+-- ============================================
+-- Storage: avatars (foto de perfil)
+-- ============================================
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+create policy "Avatars public read" on storage.objects
+  for select using (bucket_id = 'avatars');
+
+create policy "Avatars authenticated upload" on storage.objects
+  for insert to authenticated with check (bucket_id = 'avatars');
+
+create policy "Avatars authenticated update" on storage.objects
+  for update to authenticated using (bucket_id = 'avatars');
+
+create policy "Avatars authenticated delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'avatars');
 
 -- ============================================
 -- Seed default service categories

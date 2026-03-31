@@ -11,14 +11,16 @@ Sistema completo de gestão para salões de beleza com Next.js e Supabase.
 - **Equipe** - Gestão de profissionais com comissão e status
 - **Estoque** - Controle de produtos com alertas de estoque baixo
 - **Financeiro** - Receitas, despesas, lucro e transações detalhadas
+- **Perfil e Loja** - Endereço, CNPJ, CPF do responsável, contato, descrição e foto (URL ou upload no bucket `avatars`)
 
 ## Configuração
 
 ### 1. Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com)
-2. No **SQL Editor**, execute o conteúdo de `supabase/schema.sql`
-3. Em **Settings > API**, copie a **URL** e a **anon key**
+2. No **SQL Editor**, execute o conteúdo de `supabase/schema.sql` (projeto novo)
+3. Se o banco **já existia** antes dessa versão, execute também `supabase/migration_profile_store.sql` (colunas extras, política de insert em `profiles`, storage `avatars`)
+4. Em **Settings > API**, copie a **URL** e a chave pública
 
 ### 2. Variáveis de Ambiente
 

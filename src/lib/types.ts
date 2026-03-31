@@ -4,6 +4,12 @@ export interface Profile {
   avatar_url: string | null;
   role: "admin" | "manager";
   salon_name: string;
+  salon_address: string | null;
+  store_description: string | null;
+  cnpj: string | null;
+  owner_cpf: string | null;
+  store_phone: string | null;
+  store_email: string | null;
   created_at: string;
   updated_at: string;
 }
