@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const secret = process.env.AUTH_SECRET ?? "";
+  const secret = process.env.AUTH_SECRET?.trim() ?? "";
   const token = request.cookies.get(COOKIE_NAME)?.value ?? null;
   const session =
     secret.length >= 32 && token

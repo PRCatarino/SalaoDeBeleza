@@ -18,7 +18,7 @@ export default function LoginPage() {
     const p = new URLSearchParams(window.location.search);
     if (p.get("error") === "missing_auth_secret") {
       setError(
-        "Configure AUTH_SECRET (mínimo 32 caracteres) e DATABASE_URL no servidor (Vercel ou .env.local)."
+        "Na Vercel: Project → Settings → Environment Variables. Adicione AUTH_SECRET (mín. 32 caracteres) e DATABASE_URL para Production (e Preview se usar). Guarde e faça Redeploy. Localmente use .env.local."
       );
       p.delete("error");
       const qs = p.toString();
