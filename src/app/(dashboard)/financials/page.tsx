@@ -117,21 +117,21 @@ export default function FinancialsPage() {
   return (
     <>
       <TopNav title="Financeiro" />
-      <div className="p-8 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto min-w-0">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
-          <div>
-            <h1 className="font-headline text-4xl font-extrabold text-on-background tracking-tight">Saúde Financeira</h1>
+          <div className="min-w-0">
+            <h1 className="font-headline text-2xl sm:text-3xl md:text-4xl font-extrabold text-on-background tracking-tight">Saúde Financeira</h1>
             <p className="text-on-surface-variant mt-2 font-medium">Monitore receitas, despesas e lucratividade em tempo real.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="bg-surface-container-low p-1 rounded-xl flex gap-1">
               {(["today", "week", "month"] as const).map((p) => (
-                <button key={p} onClick={() => setPeriod(p)} className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${period === p ? "bg-white shadow-sm text-primary" : "text-on-surface-variant"}`}>
+                <button type="button" key={p} onClick={() => setPeriod(p)} className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${period === p ? "bg-white shadow-sm text-primary" : "text-on-surface-variant"}`}>
                   {p === "today" ? "Hoje" : p === "week" ? "Semana" : "Mês"}
                 </button>
               ))}
             </div>
-            <button onClick={() => setModalOpen(true)} className="bg-linear-to-r from-primary to-primary-container text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+            <button type="button" onClick={() => setModalOpen(true)} className="bg-linear-to-r from-primary to-primary-container text-white px-5 sm:px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all w-full md:w-auto">
               <span className="material-symbols-outlined text-xl">add_circle</span>
               Nova Transação
             </button>
@@ -221,40 +221,40 @@ export default function FinancialsPage() {
                 <thead>
                   <tr className="bg-surface-container-low/50">
                     {["Data", "Descrição", "Categoria", "Método", "Valor", ""].map((h) => (
-                      <th key={h} className="px-8 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold">{h}</th>
+                      <th key={h} className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {transactions.map((t) => (
                     <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-8 py-4 text-sm font-medium text-slate-500">{formatDate(t.date)}</td>
-                      <td className="px-8 py-4">
-                        <div className="flex items-center gap-3">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 text-sm font-medium text-slate-500 whitespace-nowrap">{formatDate(t.date)}</td>
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 min-w-[140px]">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${t.type === "income" ? "bg-violet-100 text-violet-700" : "bg-red-100 text-error"}`}>
                             <span className="material-symbols-outlined text-sm">{t.type === "income" ? "trending_up" : "trending_down"}</span>
                           </div>
-                          <span className="text-sm font-bold text-on-background">{t.description}</span>
+                          <span className="text-sm font-bold text-on-background line-clamp-2 break-words">{t.description}</span>
                         </div>
                       </td>
-                      <td className="px-8 py-4">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
                         <span className={`px-2.5 py-1 text-[10px] font-black uppercase rounded-full ${categoryColors[t.category] || "bg-slate-100 text-slate-600"}`}>
                           {t.category}
                         </span>
                       </td>
-                      <td className="px-8 py-4">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2 text-sm text-on-surface-variant">
                           <span className="material-symbols-outlined text-sm">{paymentIcons[t.payment_method || ""] || "payments"}</span>
                           {t.payment_method || "-"}
                         </div>
                       </td>
-                      <td className="px-8 py-4">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 whitespace-nowrap">
                         <span className={`text-sm font-bold ${t.type === "income" ? "text-emerald-600" : "text-error"}`}>
                           {t.type === "income" ? "+" : "-"}{formatCurrency(Number(t.amount))}
                         </span>
                       </td>
-                      <td className="px-8 py-4">
-                        <button onClick={() => handleDelete(t.id)} className="p-1 hover:bg-error-container rounded text-on-surface-variant hover:text-error transition-all">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
+                        <button type="button" onClick={() => handleDelete(t.id)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-container rounded text-on-surface-variant hover:text-error transition-all">
                           <span className="material-symbols-outlined text-sm">delete</span>
                         </button>
                       </td>
@@ -284,7 +284,7 @@ export default function FinancialsPage() {
             <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Descrição</label>
             <input type="text" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required placeholder="Ex: Balayage - Maria Silva" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Categoria</label>
               <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary">
@@ -298,7 +298,7 @@ export default function FinancialsPage() {
               <input type="number" step="0.01" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required min="0.01" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Método de Pagamento</label>
               <select value={form.payment_method} onChange={(e) => setForm((f) => ({ ...f, payment_method: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary">

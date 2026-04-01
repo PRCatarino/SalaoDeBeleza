@@ -100,10 +100,10 @@ export default function InventoryPage() {
   return (
     <>
       <TopNav title="Estoque" />
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 min-w-0">
         {lowStockProducts.length > 0 && (
-          <div className="bg-error-container/30 border-l-4 border-error p-5 rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="bg-error-container/30 border-l-4 border-error p-4 sm:p-5 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
               <div className="w-10 h-10 bg-error/10 text-error rounded-full flex items-center justify-center">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
               </div>
@@ -130,18 +130,18 @@ export default function InventoryPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setActiveFilter("all")} className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeFilter === "all" ? "bg-primary-container text-white" : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"}`}>
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
+            <button type="button" onClick={() => setActiveFilter("all")} className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeFilter === "all" ? "bg-primary-container text-white" : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"}`}>
               Todos
             </button>
             {categories.map((cat) => (
-              <button key={cat} onClick={() => setActiveFilter(cat)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeFilter === cat ? "bg-primary-container text-white" : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"}`}>
+              <button type="button" key={cat} onClick={() => setActiveFilter(cat)} className={`px-4 py-2 rounded-lg text-sm font-semibold ${activeFilter === cat ? "bg-primary-container text-white" : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"}`}>
                 {cat}
               </button>
             ))}
           </div>
-          <button onClick={openCreate} className="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+          <button type="button" onClick={openCreate} className="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all w-full sm:w-auto shrink-0">
             <span className="material-symbols-outlined text-[18px]">add</span>
             Novo Produto
           </button>
@@ -159,11 +159,12 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.04)] overflow-hidden">
-            <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto overscroll-x-contain -mx-1" style={{ WebkitOverflowScrolling: "touch" }}>
+            <table className="w-full text-left border-collapse min-w-[640px]">
               <thead>
                 <tr className="bg-surface-container-low border-b border-outline-variant/10">
                   {["Produto", "SKU", "Categoria", "Estoque", "Preço Unit.", "Status", "Ações"].map((h) => (
-                    <th key={h} className="px-6 py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black">{h}</th>
+                    <th key={h} className="px-3 sm:px-6 py-3 sm:py-4 text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-black whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -173,17 +174,17 @@ export default function InventoryPage() {
                   const stockPercentage = Math.min(100, (product.stock_quantity / Math.max(product.min_stock * 3, 1)) * 100);
                   return (
                     <tr key={product.id} className="hover:bg-surface-container-low/50 transition-colors">
-                      <td className="px-6 py-5">
-                        <div>
+                      <td className="px-3 sm:px-6 py-4 sm:py-5">
+                        <div className="min-w-[120px]">
                           <p className="font-bold text-on-surface">{product.name}</p>
                           {product.description && <p className="text-xs text-on-surface-variant">{product.description}</p>}
                         </div>
                       </td>
-                      <td className="px-6 py-5 font-mono text-xs text-on-surface-variant">{product.sku || "-"}</td>
-                      <td className="px-6 py-5">
+                      <td className="px-3 sm:px-6 py-4 sm:py-5 font-mono text-xs text-on-surface-variant whitespace-nowrap">{product.sku || "-"}</td>
+                      <td className="px-3 sm:px-6 py-4 sm:py-5">
                         <span className="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-secondary-container uppercase">{product.category}</span>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-3 sm:px-6 py-4 sm:py-5">
                         <div className="w-full max-w-[100px]">
                           <span className={`text-xs font-bold ${product.stock_quantity <= product.min_stock ? "text-error" : "text-on-surface"}`}>
                             {product.stock_quantity} un.
@@ -193,19 +194,19 @@ export default function InventoryPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 font-bold text-on-surface">{formatCurrency(Number(product.unit_price))}</td>
-                      <td className="px-6 py-5">
+                      <td className="px-3 sm:px-6 py-4 sm:py-5 font-bold text-on-surface whitespace-nowrap">{formatCurrency(Number(product.unit_price))}</td>
+                      <td className="px-3 sm:px-6 py-4 sm:py-5">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${status.class}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
                           {status.label}
                         </span>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-3 sm:px-6 py-4 sm:py-5">
                         <div className="flex gap-1">
-                          <button onClick={() => openEdit(product)} className="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
+                          <button type="button" onClick={() => openEdit(product)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all">
                             <span className="material-symbols-outlined text-[18px]">edit</span>
                           </button>
-                          <button onClick={() => handleDelete(product.id)} className="p-2 hover:bg-error-container rounded-lg text-on-surface-variant hover:text-error transition-all">
+                          <button type="button" onClick={() => handleDelete(product.id)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-container rounded-lg text-on-surface-variant hover:text-error transition-all">
                             <span className="material-symbols-outlined text-[18px]">delete</span>
                           </button>
                         </div>
@@ -215,6 +216,7 @@ export default function InventoryPage() {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>
@@ -229,7 +231,7 @@ export default function InventoryPage() {
             <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Descrição</label>
             <input type="text" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">SKU</label>
               <input type="text" value={form.sku} onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
@@ -239,7 +241,7 @@ export default function InventoryPage() {
               <input type="text" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Quantidade</label>
               <input type="number" value={form.stock_quantity} onChange={(e) => setForm((f) => ({ ...f, stock_quantity: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required min="0" />

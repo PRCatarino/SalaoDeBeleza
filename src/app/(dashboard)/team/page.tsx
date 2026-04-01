@@ -122,19 +122,19 @@ export default function TeamPage() {
   return (
     <>
       <TopNav title="Equipe" />
-      <div className="p-8 max-w-7xl mx-auto">
-        <div className="mb-12 flex flex-col md:flex-row items-end justify-between gap-8">
-          <div className="max-w-2xl">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto min-w-0">
+        <div className="mb-8 sm:mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="max-w-2xl min-w-0">
             <span className="text-[0.6875rem] uppercase tracking-[0.2em] font-bold text-violet-700 mb-4 block">
               Nossos Profissionais
             </span>
-            <h2 className="text-5xl font-extrabold font-headline leading-tight text-on-background">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-headline leading-tight text-on-background">
               Gestão de <span className="text-primary italic">Equipe</span>
             </h2>
           </div>
-          <div className="flex gap-12 border-l-2 border-surface-container-high pl-8 pb-2">
+          <div className="flex gap-8 sm:gap-12 border-t-2 lg:border-t-0 lg:border-l-2 border-surface-container-high pt-6 lg:pt-0 lg:pl-8 pb-2 w-full lg:w-auto justify-between sm:justify-start">
             <div>
-              <p className="text-[3.5rem] font-headline font-extrabold leading-none text-on-surface">
+              <p className="text-4xl sm:text-[3.5rem] font-headline font-extrabold leading-none text-on-surface">
                 {stats.active}
               </p>
               <p className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mt-2">
@@ -142,7 +142,7 @@ export default function TeamPage() {
               </p>
             </div>
             <div>
-              <p className="text-[3.5rem] font-headline font-extrabold leading-none text-on-surface">
+              <p className="text-4xl sm:text-[3.5rem] font-headline font-extrabold leading-none text-on-surface">
                 {stats.totalBookings}
               </p>
               <p className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-bold mt-2">
@@ -244,7 +244,7 @@ export default function TeamPage() {
             <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Cargo / Especialidade</label>
             <input type="text" value={form.role_title} onChange={(e) => setForm((f) => ({ ...f, role_title: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required placeholder="Ex: Cabeleireira, Manicure, Barbeiro" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">E-mail</label>
               <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
@@ -254,7 +254,7 @@ export default function TeamPage() {
               <input type="text" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Tipo de Comissão</label>
               <select value={form.commission_type} onChange={(e) => setForm((f) => ({ ...f, commission_type: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary">

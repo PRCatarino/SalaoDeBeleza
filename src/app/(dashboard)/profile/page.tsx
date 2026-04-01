@@ -155,7 +155,7 @@ export default function ProfilePage() {
     return (
       <>
         <TopNav title="Perfil e Loja" />
-        <div className="p-8 text-on-surface-variant">Carregando perfil…</div>
+        <div className="p-4 sm:p-6 md:p-8 text-on-surface-variant">Carregando perfil…</div>
       </>
     );
   }
@@ -163,7 +163,7 @@ export default function ProfilePage() {
   return (
     <>
       <TopNav title="Perfil e Loja" />
-      <div className="p-8 max-w-3xl mx-auto">
+      <div className="p-4 sm:p-6 md:p-8 max-w-3xl mx-auto min-w-0">
         <div className="mb-8">
           <h2 className="text-2xl font-headline font-extrabold text-on-background">
             Seu perfil e dados da loja
@@ -176,7 +176,7 @@ export default function ProfilePage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(11,28,48,0.04)] border border-outline-variant/10 p-8 space-y-6"
+          className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(11,28,48,0.04)] border border-outline-variant/10 p-4 sm:p-6 md:p-8 space-y-6"
         >
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             <div className="flex flex-col items-center gap-3">

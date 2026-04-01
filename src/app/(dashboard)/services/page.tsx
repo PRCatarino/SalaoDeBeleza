@@ -112,27 +112,29 @@ export default function ServicesPage() {
   return (
     <>
       <TopNav title="Serviços" />
-      <div className="p-8 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-          <div>
-            <h1 className="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-2">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto min-w-0">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10">
+          <div className="min-w-0">
+            <h1 className="font-headline text-2xl sm:text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight mb-2">
               Menu de Serviços
             </h1>
-            <p className="text-on-surface-variant text-lg">
+            <p className="text-on-surface-variant text-base sm:text-lg">
               Gerencie os serviços oferecidos pelo seu salão.
             </p>
           </div>
           <button
+            type="button"
             onClick={openCreate}
-            className="inline-flex items-center gap-2 bg-linear-to-br from-primary to-primary-container text-white px-8 py-4 rounded-xl font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all"
+            className="inline-flex items-center justify-center gap-2 bg-linear-to-br from-primary to-primary-container text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all w-full md:w-auto shrink-0"
           >
             <span className="material-symbols-outlined">add_circle</span>
             Novo Serviço
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 mb-8">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-8">
           <button
+            type="button"
             onClick={() => setActiveFilter("all")}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
               activeFilter === "all"
@@ -144,6 +146,7 @@ export default function ServicesPage() {
           </button>
           {categories.map((cat) => (
             <button
+              type="button"
               key={cat.id}
               onClick={() => setActiveFilter(cat.id)}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
@@ -155,7 +158,7 @@ export default function ServicesPage() {
               {cat.name}
             </button>
           ))}
-          <div className="ml-auto flex items-center gap-2 text-on-surface-variant">
+          <div className="w-full sm:w-auto sm:ml-auto flex items-center justify-end gap-2 text-on-surface-variant pt-1 sm:pt-0">
             <span className="text-xs uppercase tracking-widest font-bold">Total:</span>
             <span className="text-sm font-semibold text-primary">{filtered.length}</span>
           </div>
@@ -183,10 +186,10 @@ export default function ServicesPage() {
                       {catName}
                     </span>
                     <div className="flex gap-1">
-                      <button onClick={() => openEdit(svc)} className="p-2 text-outline hover:text-primary hover:bg-primary-fixed transition-colors rounded-lg">
+                      <button type="button" onClick={() => openEdit(svc)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-outline hover:text-primary hover:bg-primary-fixed transition-colors rounded-lg">
                         <span className="material-symbols-outlined">edit</span>
                       </button>
-                      <button onClick={() => handleDelete(svc.id)} className="p-2 text-outline hover:text-error hover:bg-error-container transition-colors rounded-lg">
+                      <button type="button" onClick={() => handleDelete(svc.id)} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-outline hover:text-error hover:bg-error-container transition-colors rounded-lg">
                         <span className="material-symbols-outlined">delete</span>
                       </button>
                     </div>
@@ -207,6 +210,7 @@ export default function ServicesPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-[0.6875rem] font-medium text-on-surface-variant">Agendamento Online</span>
                     <button
+                      type="button"
                       onClick={() => toggleBooking(svc.id, svc.online_booking)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
                         svc.online_booking ? "bg-primary" : "bg-surface-container-highest"
@@ -221,22 +225,22 @@ export default function ServicesPage() {
           </div>
         )}
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 bg-surface-container rounded-3xl">
+        <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="p-6 sm:p-8 bg-surface-container rounded-3xl">
             <p className="text-[0.6875rem] uppercase tracking-widest font-black text-primary mb-4">Total de Serviços</p>
-            <h4 className="font-headline text-5xl font-extrabold text-on-surface mb-2">{services.length}</h4>
+            <h4 className="font-headline text-4xl sm:text-5xl font-extrabold text-on-surface mb-2">{services.length}</h4>
             <p className="text-on-surface-variant font-medium">serviços cadastrados</p>
           </div>
-          <div className="p-8 bg-surface-container-high rounded-3xl">
+          <div className="p-6 sm:p-8 bg-surface-container-high rounded-3xl">
             <p className="text-[0.6875rem] uppercase tracking-widest font-black text-secondary mb-4">Booking Online</p>
-            <h4 className="font-headline text-5xl font-extrabold text-on-surface mb-2">
+            <h4 className="font-headline text-4xl sm:text-5xl font-extrabold text-on-surface mb-2">
               {services.filter((s) => s.online_booking).length}
             </h4>
             <p className="text-on-surface-variant font-medium">disponíveis para agendamento</p>
           </div>
-          <div className="p-8 bg-primary text-on-primary-container rounded-3xl">
+          <div className="p-6 sm:p-8 bg-primary text-on-primary-container rounded-3xl">
             <p className="text-[0.6875rem] uppercase tracking-widest font-black text-white mb-4">Categorias</p>
-            <h4 className="font-headline text-5xl font-extrabold text-white mb-2">{categories.length}</h4>
+            <h4 className="font-headline text-4xl sm:text-5xl font-extrabold text-white mb-2">{categories.length}</h4>
             <p className="text-white/80 font-medium">categorias ativas</p>
           </div>
         </div>
@@ -257,7 +261,7 @@ export default function ServicesPage() {
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Duração (min)</label>
               <input type="number" value={form.duration_minutes} onChange={(e) => setForm((f) => ({ ...f, duration_minutes: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" required min="5" />

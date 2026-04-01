@@ -135,19 +135,22 @@ export default function AgendaPage() {
 
   const colors = ["violet", "emerald", "amber", "blue", "rose", "teal"];
 
+  const agendaGridMinWidth =
+    professionals.length > 0 ? 80 + professionals.length * 104 : 320;
+
   return (
     <>
       <TopNav title="Agenda" />
-      <div className="p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+      <div className="p-4 sm:p-6 md:p-8 max-w-[100vw] overflow-x-hidden">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary"
+              className="px-3 sm:px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary w-full sm:w-auto min-w-0"
             />
-            <span className="text-sm text-on-surface-variant font-medium">
+            <span className="text-sm text-on-surface-variant font-medium hidden sm:inline">
               {new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR", {
                 weekday: "long",
                 day: "numeric",
@@ -155,10 +158,18 @@ export default function AgendaPage() {
                 year: "numeric",
               })}
             </span>
+            <span className="text-sm text-on-surface-variant font-medium sm:hidden">
+              {new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
           </div>
           <button
+            type="button"
             onClick={() => setModalOpen(true)}
-            className="bg-primary-container text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all"
+            className="bg-primary-container text-white px-5 sm:px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all w-full sm:w-auto shrink-0"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Novo Agendamento
@@ -180,7 +191,15 @@ export default function AgendaPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(11,28,48,0.06)] overflow-hidden border border-surface-container-high">
+          <div className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(11,28,48,0.06)] border border-surface-container-high overflow-hidden">
+            <div
+              className="overflow-x-auto overscroll-x-contain -mx-1 px-1 sm:mx-0 sm:px-0"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
+              <div
+                className="min-w-0 inline-block align-top w-full sm:w-auto"
+                style={{ minWidth: agendaGridMinWidth }}
+              >
             <div className="grid border-b border-surface-container-high bg-white" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
               <div className="border-r border-surface-container-high flex items-center justify-center p-4">
                 <span className="text-[10px] font-bold text-on-surface-variant uppercase">Hora</span>
@@ -196,7 +215,7 @@ export default function AgendaPage() {
               ))}
             </div>
 
-            <div className="overflow-y-auto custom-scrollbar max-h-[600px]">
+            <div className="overflow-y-auto custom-scrollbar max-h-[min(600px,55vh)] sm:max-h-[600px]">
               {HOURS.map((hour) => (
                 <div key={hour} className="grid border-b border-surface-container-high/50" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
                   <div className="border-r border-surface-container-high flex items-start justify-center pt-2 h-20">
@@ -271,6 +290,8 @@ export default function AgendaPage() {
                 </div>
               ))}
             </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -296,7 +317,7 @@ export default function AgendaPage() {
           </div>
 
           {!form.client_id && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
                   Nome do Cliente
@@ -361,7 +382,7 @@ export default function AgendaPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
                 Hora

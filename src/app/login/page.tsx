@@ -107,7 +107,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center editorial-gradient p-6">
+    <div className="min-h-dvh flex items-center justify-center editorial-gradient p-4 sm:p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
       <main className="w-full max-w-[440px]">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary-container mb-4 shadow-lg shadow-primary/20">
@@ -123,7 +123,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl p-8 md:p-10 shadow-[0_8px_32px_rgba(11,28,48,0.06)] relative overflow-hidden">
+        <div className="bg-white rounded-xl p-6 sm:p-8 md:p-10 shadow-[0_8px_32px_rgba(11,28,48,0.06)] relative overflow-hidden w-full">
           <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary to-secondary opacity-80" />
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -213,12 +213,13 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <button
+              type="button"
               onClick={() => {
                 setIsSignUp(!isSignUp);
                 setError("");
                 setMessage("");
               }}
-              className="text-sm text-on-surface-variant hover:text-primary transition-colors"
+              className="text-sm text-on-surface-variant hover:text-primary transition-colors py-2 min-h-[44px]"
             >
               {isSignUp
                 ? "Já tem uma conta? Faça login"

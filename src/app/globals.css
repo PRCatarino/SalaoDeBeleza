@@ -58,6 +58,8 @@ body {
   font-family: var(--font-family-body);
   background-color: var(--color-surface);
   color: var(--color-on-surface);
+  overflow-x: clip;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, .font-headline {

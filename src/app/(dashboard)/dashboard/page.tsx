@@ -116,7 +116,7 @@ export default function DashboardPage() {
     return (
       <>
         <TopNav title="Dashboard" />
-        <div className="p-8 flex items-center justify-center h-64">
+        <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-64">
           <p className="text-on-surface-variant">Carregando...</p>
         </div>
       </>
@@ -129,9 +129,9 @@ export default function DashboardPage() {
   return (
     <>
       <TopNav title="Dashboard" />
-      <div className="p-8 max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h2 className="text-4xl font-extrabold font-headline tracking-tight text-on-background mb-2">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto min-w-0">
+        <div className="mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-headline tracking-tight text-on-background mb-2">
             Painel de Controle
           </h2>
           <p className="text-on-surface-variant font-medium">
@@ -257,8 +257,8 @@ export default function DashboardPage() {
         </div>
 
         <section className="bg-white rounded-xl shadow-[0_8px_32px_rgba(11,28,48,0.03)] border border-white/50 overflow-hidden">
-          <div className="p-8 flex justify-between items-center border-b border-slate-50">
-            <h3 className="text-xl font-bold font-headline">
+          <div className="p-4 sm:p-6 md:p-8 flex justify-between items-center border-b border-slate-50 gap-2">
+            <h3 className="text-lg sm:text-xl font-bold font-headline">
               Agendamentos de Hoje
             </h3>
           </div>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
                       (h) => (
                         <th
                           key={h}
-                          className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant"
+                          className="px-3 sm:px-5 md:px-8 py-3 sm:py-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant whitespace-nowrap"
                         >
                           {h}
                         </th>
@@ -289,32 +289,32 @@ export default function DashboardPage() {
                 <tbody className="divide-y divide-slate-50">
                   {upcomingAppointments.map((apt) => (
                     <tr key={apt.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-8 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-primary">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-primary text-sm">
                             {apt.client?.full_name?.charAt(0) || "?"}
                           </div>
-                          <p className="text-sm font-bold text-on-background">
+                          <p className="text-sm font-bold text-on-background truncate max-w-[120px] sm:max-w-none">
                             {apt.client?.full_name || "Cliente removido"}
                           </p>
                         </div>
                       </td>
-                      <td className="px-8 py-4">
-                        <p className="text-sm font-medium text-on-background">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
+                        <p className="text-sm font-medium text-on-background whitespace-nowrap">
                           {apt.service?.name || "-"}
                         </p>
                       </td>
-                      <td className="px-8 py-4">
-                        <p className="text-sm font-bold text-on-background">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
+                        <p className="text-sm font-bold text-on-background whitespace-nowrap">
                           {formatTime(apt.start_time)}
                         </p>
                       </td>
-                      <td className="px-8 py-4">
-                        <p className="text-sm font-medium text-on-background">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
+                        <p className="text-sm font-medium text-on-background truncate max-w-[100px] sm:max-w-[160px] md:max-w-none">
                           {apt.professional?.full_name || "-"}
                         </p>
                       </td>
-                      <td className="px-8 py-4">
+                      <td className="px-3 sm:px-5 md:px-8 py-3 sm:py-4">
                         <span
                           className={`px-3 py-1 text-[10px] font-bold uppercase rounded-full ${
                             statusColor[apt.status] || ""
