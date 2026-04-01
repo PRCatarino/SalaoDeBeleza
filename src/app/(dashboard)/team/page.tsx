@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Professional } from "@/lib/types";
@@ -24,21 +24,18 @@ export default function TeamPage() {
   const [stats, setStats] = useState({ active: 0, totalBookings: 0 });
 
   const fetchData = useCallback(async () => {
-    const supabase = createClient();
-    const { data } = await supabase.from("professionals").select("*").order("full_name");
-    const pros = data || [];
+    const { data } = await salonRpc("professionalsList");
+    const pros = (data as Professional[]) || [];
     setProfessionals(pros);
 
     const active = pros.filter((p) => p.status === "active").length;
 
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const { count } = await supabase
-      .from("appointments")
-      .select("id", { count: "exact", head: true })
-      .gte("start_time", startOfMonth);
+    const countRes = await salonRpc("professionalsAppointmentsMonthCount", { startOfMonth });
+    const totalBookings = typeof countRes.data === "number" ? countRes.data : 0;
 
-    setStats({ active, totalBookings: count || 0 });
+    setStats({ active, totalBookings });
     setLoading(false);
   }, []);
 
@@ -78,7 +75,6 @@ export default function TeamPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     const payload = {
       full_name: form.full_name,
       role_title: form.role_title,
@@ -91,9 +87,9 @@ export default function TeamPage() {
     };
 
     if (editingPro) {
-      await supabase.from("professionals").update(payload).eq("id", editingPro.id);
+      await salonRpc("professionalsUpdate", { id: editingPro.id, ...payload });
     } else {
-      await supabase.from("professionals").insert(payload);
+      await salonRpc("professionalsInsert", payload);
     }
 
     setModalOpen(false);
@@ -102,8 +98,7 @@ export default function TeamPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja remover este profissional?")) return;
-    const supabase = createClient();
-    await supabase.from("professionals").delete().eq("id", id);
+    await salonRpc("professionalsDelete", { id });
     fetchData();
   };
 

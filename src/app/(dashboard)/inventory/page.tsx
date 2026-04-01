@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { InventoryProduct } from "@/lib/types";
@@ -23,9 +23,8 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    const supabase = createClient();
-    const { data } = await supabase.from("inventory_products").select("*").order("name");
-    setProducts(data || []);
+    const { data } = await salonRpc("inventoryList");
+    setProducts((data as InventoryProduct[]) || []);
     setLoading(false);
   }, []);
 
@@ -55,7 +54,6 @@ export default function InventoryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     const payload = {
       name: form.name,
       description: form.description || null,
@@ -67,9 +65,9 @@ export default function InventoryPage() {
     };
 
     if (editingProduct) {
-      await supabase.from("inventory_products").update(payload).eq("id", editingProduct.id);
+      await salonRpc("inventoryUpdate", { id: editingProduct.id, ...payload });
     } else {
-      await supabase.from("inventory_products").insert(payload);
+      await salonRpc("inventoryInsert", payload);
     }
 
     setModalOpen(false);
@@ -78,8 +76,7 @@ export default function InventoryPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    const supabase = createClient();
-    await supabase.from("inventory_products").delete().eq("id", id);
+    await salonRpc("inventoryDelete", { id });
     fetchData();
   };
 

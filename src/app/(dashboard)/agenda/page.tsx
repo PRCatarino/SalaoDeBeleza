@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Appointment, Professional, Service, Client } from "@/lib/types";
@@ -31,28 +31,26 @@ export default function AgendaPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    const supabase = createClient();
     const dayStart = `${selectedDate}T00:00:00`;
     const dayEnd = `${selectedDate}T23:59:59`;
 
-    const [proRes, aptRes, svcRes, cliRes] = await Promise.all([
-      supabase.from("professionals").select("*").eq("status", "active").order("full_name"),
-      supabase
-        .from("appointments")
-        .select("*, client:clients(*), professional:professionals(*), service:services(*)")
-        .gte("start_time", dayStart)
-        .lte("start_time", dayEnd)
-        .neq("status", "cancelled")
-        .order("start_time"),
-      supabase.from("services").select("*").eq("active", true).order("name"),
-      supabase.from("clients").select("*").order("full_name"),
-    ]);
+    try {
+      const [proRes, aptRes, svcRes, cliRes] = await Promise.all([
+        salonRpc("professionalsListActive"),
+        salonRpc("appointmentsForDay", { dayStart, dayEnd }),
+        salonRpc("servicesListWithCategory"),
+        salonRpc("clientsList"),
+      ]);
 
-    setProfessionals(proRes.data || []);
-    setAppointments((aptRes.data as Appointment[]) || []);
-    setServices(svcRes.data || []);
-    setClients(cliRes.data || []);
-    setLoading(false);
+      setProfessionals(proRes.data || []);
+      setAppointments((aptRes.data as Appointment[]) || []);
+      setServices(((svcRes.data as Service[]) || []).filter((s) => s.active));
+      setClients(cliRes.data || []);
+    } catch (e) {
+      console.error("[agenda]", e);
+    } finally {
+      setLoading(false);
+    }
   }, [selectedDate]);
 
   useEffect(() => {
@@ -61,17 +59,16 @@ export default function AgendaPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
 
     let clientId = form.client_id;
 
     if (!clientId && form.newClientName) {
-      const { data } = await supabase
-        .from("clients")
-        .insert({ full_name: form.newClientName, phone: form.newClientPhone || null })
-        .select()
-        .single();
-      if (data) clientId = data.id;
+      const ins = await salonRpc("clientsInsert", {
+        full_name: form.newClientName,
+        phone: form.newClientPhone || null,
+      });
+      const row = ins.data as Client | null;
+      if (row?.id) clientId = row.id;
     }
 
     if (!clientId || !form.professional_id || !form.service_id) return;
@@ -80,7 +77,7 @@ export default function AgendaPage() {
     const startTime = new Date(`${selectedDate}T${form.start_hour}:${form.start_minute}:00`);
     const endTime = new Date(startTime.getTime() + (service?.duration_minutes || 60) * 60000);
 
-    await supabase.from("appointments").insert({
+    await salonRpc("appointmentsInsert", {
       client_id: clientId,
       professional_id: form.professional_id,
       service_id: form.service_id,
@@ -106,13 +103,12 @@ export default function AgendaPage() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    const supabase = createClient();
-    await supabase.from("appointments").update({ status }).eq("id", id);
+    await salonRpc("appointmentsUpdateStatus", { id, status });
 
     if (status === "completed") {
       const apt = appointments.find((a) => a.id === id);
       if (apt) {
-        await supabase.from("transactions").insert({
+        await salonRpc("transactionsInsert", {
           type: "income",
           category: "Serviço",
           description: `${apt.service?.name || "Serviço"} - ${apt.client?.full_name || "Cliente"}`,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import type { Profile } from "@/lib/types";
 import Image from "next/image";
@@ -29,52 +29,30 @@ export default function ProfilePage() {
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    const res = await fetch("/api/auth/me");
+    if (res.status === 401) {
       setLoading(false);
       return;
     }
-    setUserId(user.id);
-
-    const { data: row, error: qErr } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (qErr) {
-      setError(qErr.message);
+    if (!res.ok) {
+      const j = (await res.json().catch(() => ({}))) as { error?: string };
+      setError(j.error || res.statusText);
       setLoading(false);
       return;
     }
-
-    if (row) {
-      const p = row as Profile;
-      setForm({
-        full_name: p.full_name || "",
-        salon_name: p.salon_name || "",
-        salon_address: p.salon_address || "",
-        store_description: p.store_description || "",
-        cnpj: p.cnpj || "",
-        owner_cpf: p.owner_cpf || "",
-        store_phone: p.store_phone || "",
-        store_email: p.store_email || "",
-        avatar_url: p.avatar_url || "",
-      });
-    } else {
-      setForm({
-        ...emptyForm,
-        full_name:
-          (user.user_metadata?.full_name as string) ||
-          user.email?.split("@")[0] ||
-          "",
-        salon_name:
-          (user.user_metadata?.salon_name as string) || "Meu Salão",
-      });
-    }
+    const row = (await res.json()) as Profile;
+    setUserId(row.id);
+    setForm({
+      full_name: row.full_name || "",
+      salon_name: row.salon_name || "",
+      salon_address: row.salon_address || "",
+      store_description: row.store_description || "",
+      cnpj: row.cnpj || "",
+      owner_cpf: row.owner_cpf || "",
+      store_phone: row.store_phone || "",
+      store_email: row.store_email || "",
+      avatar_url: row.avatar_url || "",
+    });
     setLoading(false);
   }, []);
 
@@ -86,20 +64,16 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
     setError("");
-    const supabase = createClient();
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${userId}/avatar-${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from("avatars")
-      .upload(path, file, { upsert: true, cacheControl: "3600" });
-    if (upErr) {
-      setError(
-        `Upload falhou: ${upErr.message}. Crie o bucket "avatars" e as políticas (veja supabase/migration_profile_store.sql) ou use URL abaixo.`
-      );
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload/avatar", { method: "POST", body: fd });
+    if (!res.ok) {
+      const j = (await res.json().catch(() => ({}))) as { error?: string };
+      setError(`Upload falhou: ${j.error || res.statusText}`);
       return;
     }
-    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
-    setForm((f) => ({ ...f, avatar_url: pub.publicUrl }));
+    const { url } = (await res.json()) as { url: string };
+    setForm((f) => ({ ...f, avatar_url: url }));
     setMessage("Foto enviada. Clique em Salvar alterações.");
     e.target.value = "";
   };
@@ -110,43 +84,24 @@ export default function ProfilePage() {
     setSaving(true);
     setError("");
     setMessage("");
-    const supabase = createClient();
-
-    const payload = {
-      id: userId,
-      full_name: form.full_name.trim() || "Usuário",
-      salon_name: form.salon_name.trim() || "Meu Salão",
-      salon_address: form.salon_address.trim() || null,
-      store_description: form.store_description.trim() || null,
-      cnpj: form.cnpj.replace(/\D/g, "") || null,
-      owner_cpf: form.owner_cpf.replace(/\D/g, "") || null,
-      store_phone: form.store_phone.trim() || null,
-      store_email: form.store_email.trim() || null,
-      avatar_url: form.avatar_url.trim() || null,
-    };
-
-    const { data: exists } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", userId)
-      .maybeSingle();
-
-    let saveErr;
-    if (exists) {
-      const rest = { ...payload };
-      delete (rest as { id?: string }).id;
-      const r = await supabase.from("profiles").update(rest).eq("id", userId);
-      saveErr = r.error;
-    } else {
-      const r = await supabase.from("profiles").insert(payload);
-      saveErr = r.error;
-    }
-
-    setSaving(false);
-    if (saveErr) {
-      setError(saveErr.message);
+    try {
+      await salonRpc("profileUpsert", {
+        full_name: form.full_name.trim() || "Usuário",
+        salon_name: form.salon_name.trim() || "Meu Salão",
+        salon_address: form.salon_address.trim() || null,
+        store_description: form.store_description.trim() || null,
+        cnpj: form.cnpj.replace(/\D/g, "") || null,
+        owner_cpf: form.owner_cpf.replace(/\D/g, "") || null,
+        store_phone: form.store_phone.trim() || null,
+        store_email: form.store_email.trim() || null,
+        avatar_url: form.avatar_url.trim() || null,
+      });
+    } catch (err) {
+      setSaving(false);
+      setError(err instanceof Error ? err.message : "Erro ao salvar");
       return;
     }
+    setSaving(false);
     setMessage("Dados salvos com sucesso.");
     await load();
   };
@@ -203,22 +158,6 @@ export default function ProfilePage() {
                   onChange={handleAvatarFile}
                 />
               </label>
-            </div>
-            <div className="flex-1 w-full space-y-4">
-              <div>
-                <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">
-                  URL da foto (opcional)
-    </label>
-                <input
-                  type="url"
-                  value={form.avatar_url}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, avatar_url: e.target.value }))
-                  }
-                  className="w-full h-11 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary text-sm"
-                  placeholder="https://..."
-                />
-              </div>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import type { Appointment } from "@/lib/types";
 
@@ -23,63 +23,28 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const supabase = createClient();
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
       const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
 
-      const [appointmentsRes, transactionsRes, newClientsRes, upcomingRes, inventoryRes] =
-        await Promise.all([
-          supabase
-            .from("appointments")
-            .select("id, price")
-            .gte("start_time", startOfMonth)
-            .neq("status", "cancelled"),
-          supabase
-            .from("transactions")
-            .select("amount, date, type")
-            .eq("type", "income")
-            .gte("date", startOfMonth),
-          supabase
-            .from("clients")
-            .select("id")
-            .gte("created_at", startOfMonth),
-          supabase
-            .from("appointments")
-            .select("*, client:clients(*), professional:professionals(*), service:services(*)")
-            .gte("start_time", today)
-            .lt("start_time", tomorrow)
-            .order("start_time", { ascending: true })
-            .limit(5),
-          supabase
-            .from("inventory_products")
-            .select("id, stock_quantity, min_stock"),
-        ]);
+      const result = await salonRpc("dashboardLoad", { startOfMonth, today, tomorrow });
+      const d = result.data as {
+        stats: {
+          revenue: number;
+          appointments: number;
+          newClients: number;
+          avgTicket: number;
+        };
+        upcomingAppointments: Appointment[];
+        revenueByDay: number[];
+        lowStockCount: number;
+      };
 
-      const totalRevenue =
-        transactionsRes.data?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
-      const appointmentCount = appointmentsRes.data?.length || 0;
-      const avgTicket = appointmentCount > 0 ? totalRevenue / appointmentCount : 0;
-
-      const lowStock =
-        inventoryRes.data?.filter((p) => p.stock_quantity <= p.min_stock).length || 0;
-
-      const days: number[] = Array(7).fill(0);
-      transactionsRes.data?.forEach((t) => {
-        const day = new Date(t.date).getDay();
-        days[day] += Number(t.amount);
-      });
-
-      setStats({
-        revenue: totalRevenue,
-        appointments: appointmentCount,
-        newClients: newClientsRes.data?.length || 0,
-        avgTicket,
-      });
-      setUpcomingAppointments((upcomingRes.data as Appointment[]) || []);
-      setRevenueByDay(days);
-      setLowStockCount(lowStock);
+      setStats(d.stats);
+      setUpcomingAppointments(d.upcomingAppointments || []);
+      setRevenueByDay(d.revenueByDay ?? Array(7).fill(0));
+      setLowStockCount(d.lowStockCount ?? 0);
     } catch (e) {
       console.error("[dashboard]", e);
     } finally {

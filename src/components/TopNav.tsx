@@ -2,79 +2,42 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { useOptionalMobileNav } from "@/lib/mobile-nav";
 
 export default function TopNav({ title }: { title: string }) {
   const mobileNav = useOptionalMobileNav();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [fallbackName, setFallbackName] = useState("");
-  const [fallbackSalon, setFallbackSalon] = useState("");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        if (!cancelled) setReady(true);
+      let res: Response;
+      try {
+        res = await fetch("/api/auth/me");
+      } catch (e) {
+        if (!cancelled) {
+          console.error("[TopNav] /api/auth/me", e);
+          setReady(true);
+        }
         return;
       }
 
-      const metaName =
-        (user.user_metadata?.full_name as string | undefined) ||
-        user.email?.split("@")[0] ||
-        "Usuário";
-      const metaSalon =
-        (user.user_metadata?.salon_name as string | undefined) || "Meu Salão";
-
-      const { data: row, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
       if (cancelled) return;
 
-      if (error) {
-        console.error("[TopNav] profiles", error);
-        setFallbackName(metaName);
-        setFallbackSalon(metaSalon);
+      if (!res.ok) {
+        if (res.status !== 401) {
+          console.error("[TopNav] /api/auth/me", res.status);
+        }
         setReady(true);
         return;
       }
 
-      if (row) {
-        setProfile(row as Profile);
-        setReady(true);
-        return;
-      }
-
-      const { data: inserted, error: insErr } = await supabase
-        .from("profiles")
-        .insert({
-          id: user.id,
-          full_name: metaName,
-          salon_name: metaSalon,
-        })
-        .select("*")
-        .maybeSingle();
-
+      const row = (await res.json()) as Profile;
       if (cancelled) return;
-
-      if (!insErr && inserted) {
-        setProfile(inserted as Profile);
-      } else {
-        if (insErr) console.error("[TopNav] insert profile", insErr);
-        setFallbackName(metaName);
-        setFallbackSalon(metaSalon);
-      }
+      setProfile(row);
       setReady(true);
     };
 
@@ -84,8 +47,8 @@ export default function TopNav({ title }: { title: string }) {
     };
   }, []);
 
-  const displayName = profile?.full_name || fallbackName || "Conta";
-  const displaySalon = profile?.salon_name || fallbackSalon || "";
+  const displayName = profile?.full_name || "Conta";
+  const displaySalon = profile?.salon_name || "";
   const avatar = profile?.avatar_url;
   const initial = (displayName || "?").charAt(0).toUpperCase();
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Transaction } from "@/lib/types";
@@ -34,15 +34,15 @@ export default function FinancialsPage() {
   }, [period]);
 
   const fetchData = useCallback(async () => {
-    const supabase = createClient();
-    const startDate = getDateRange();
-    const { data } = await supabase
-      .from("transactions")
-      .select("*")
-      .gte("date", startDate)
-      .order("date", { ascending: false });
-    setTransactions(data || []);
-    setLoading(false);
+    try {
+      const startDate = getDateRange();
+      const result = await salonRpc("transactionsListFrom", { startDate });
+      setTransactions((result.data as Transaction[]) || []);
+    } catch (e) {
+      console.error("[financials]", e);
+    } finally {
+      setLoading(false);
+    }
   }, [getDateRange]);
 
   useEffect(() => {
@@ -51,8 +51,7 @@ export default function FinancialsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    await supabase.from("transactions").insert({
+    await salonRpc("transactionsInsert", {
       type: form.type,
       category: form.category,
       description: form.description,
@@ -74,8 +73,7 @@ export default function FinancialsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Excluir esta transação?")) return;
-    const supabase = createClient();
-    await supabase.from("transactions").delete().eq("id", id);
+    await salonRpc("transactionsDelete", { id });
     fetchData();
   };
 

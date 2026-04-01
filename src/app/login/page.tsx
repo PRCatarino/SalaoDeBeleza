@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getAuthCallbackUrl } from "@/lib/site-url";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -18,9 +16,16 @@ export default function LoginPage() {
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    if (p.get("error") === "missing_env") {
+    if (p.get("error") === "missing_auth_secret") {
       setError(
-        "Variáveis do Supabase não configuradas no deploy. Na Vercel, em Environment Variables, defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY (ou ANON_KEY), depois faça Redeploy."
+        "Configure AUTH_SECRET (mínimo 32 caracteres) e DATABASE_URL no servidor (Vercel ou .env.local)."
+      );
+      p.delete("error");
+      const qs = p.toString();
+      window.history.replaceState(
+        {},
+        "",
+        qs ? `${window.location.pathname}?${qs}` : window.location.pathname
       );
     }
   }, []);
@@ -30,8 +35,6 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     setMessage("");
-
-    const supabase = createClient();
 
     if (isSignUp) {
       const intentRes = await fetch("/api/auth/register-intent", {
@@ -53,9 +56,11 @@ export default function LoginPage() {
           rate_limit_ip:
             "Muitas tentativas de cadastro nesta conexão. Aguarde 24 horas ou tente outra rede.",
           server_misconfigured:
-            "Cadastro indisponível: configure SUPABASE_SERVICE_ROLE_KEY no servidor (Vercel).",
-          supabase_key_invalid:
-            "Chave do Supabase incorreta na Vercel: use a service_role (JWT longo eyJ...), não a chave publishable.",
+            "Cadastro indisponível: configure DATABASE_URL no servidor.",
+          db_unreachable:
+            "Sem ligação ao PostgreSQL. Verifique se o servidor de BD está acessível e se DATABASE_URL está correto.",
+          db_auth_failed:
+            "A password na DATABASE_URL não bate com o utilizador salao_app no Postgres. Na VPS rode ALTER ROLE salao_app PASSWORD 'sua_senha'; e use a mesma na URL (caracteres especiais em percent-encoding, ex.: $ → %24).",
           invalid_email: "Informe um e-mail válido.",
         };
         setError(
@@ -66,39 +71,55 @@ export default function LoginPage() {
         return;
       }
 
-      const emailRedirectTo = getAuthCallbackUrl();
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo,
-          data: {
-            full_name: fullName,
-            salon_name: salonName || "Meu Salão",
-          },
-        },
+      const regRes = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          fullName: fullName.trim(),
+          salonName: (salonName || "Meu Salão").trim(),
+        }),
       });
-      if (error) {
-        const msg = error.message.toLowerCase();
-        if (msg.includes("rate limit")) {
+      if (!regRes.ok) {
+        if (regRes.status === 409) {
+          setError("Já existe conta com este e-mail. Faça login.");
+        } else {
+          const j = (await regRes.json().catch(() => ({}))) as { error?: string };
           setError(
-            "Limite de e-mails do provedor atingido. Aguarde cerca de 1 hora ou tente outro e-mail."
+            j.error === "invalid"
+              ? "Dados inválidos. Use senha com pelo menos 6 caracteres."
+              : j.error === "db_unreachable"
+                ? "Sem ligação ao PostgreSQL."
+                : j.error === "db_auth_failed"
+                  ? "DATABASE_URL: utilizador ou password incorretos no Postgres."
+                  : "Não foi possível criar a conta."
+          );
+        }
+        setLoading(false);
+        return;
+      }
+      router.push("/dashboard");
+      return;
+    } else {
+      const loginRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      if (!loginRes.ok) {
+        if (loginRes.status === 503) {
+          const j = (await loginRes.json().catch(() => ({}))) as {
+            error?: string;
+          };
+          setError(
+            j.error === "db_auth_failed"
+              ? "DATABASE_URL: password do Postgres (salao_app) incorreta. Alinhe com ALTER ROLE na VPS."
+              : "Sem ligação ao PostgreSQL. Verifique DATABASE_URL."
           );
         } else {
-          setError(error.message);
+          setError("E-mail ou senha incorretos.");
         }
-      } else {
-        setMessage(
-          "Conta criada! Verifique seu e-mail para confirmar o cadastro."
-        );
-      }
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        setError("E-mail ou senha incorretos.");
       } else {
         router.push("/dashboard");
         return;

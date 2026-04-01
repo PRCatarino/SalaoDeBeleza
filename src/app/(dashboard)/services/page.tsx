@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { salonRpc } from "@/lib/rpc-client";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Service, ServiceCategory } from "@/lib/types";
@@ -23,13 +23,12 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    const supabase = createClient();
     const [svcRes, catRes] = await Promise.all([
-      supabase.from("services").select("*, category:service_categories(*)").order("name"),
-      supabase.from("service_categories").select("*").order("name"),
+      salonRpc("servicesListWithCategory"),
+      salonRpc("serviceCategoriesList"),
     ]);
     setServices((svcRes.data as Service[]) || []);
-    setCategories(catRes.data || []);
+    setCategories((catRes.data as ServiceCategory[]) || []);
     setLoading(false);
   }, []);
 
@@ -58,7 +57,6 @@ export default function ServicesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     const payload = {
       name: form.name,
       category_id: form.category_id || null,
@@ -69,9 +67,9 @@ export default function ServicesPage() {
     };
 
     if (editingService) {
-      await supabase.from("services").update(payload).eq("id", editingService.id);
+      await salonRpc("servicesUpdate", { id: editingService.id, ...payload });
     } else {
-      await supabase.from("services").insert(payload);
+      await salonRpc("servicesInsert", payload);
     }
 
     setModalOpen(false);
@@ -80,14 +78,12 @@ export default function ServicesPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este serviço?")) return;
-    const supabase = createClient();
-    await supabase.from("services").delete().eq("id", id);
+    await salonRpc("servicesDelete", { id });
     fetchData();
   };
 
   const toggleBooking = async (id: string, current: boolean) => {
-    const supabase = createClient();
-    await supabase.from("services").update({ online_booking: !current }).eq("id", id);
+    await salonRpc("servicesToggleBooking", { id, current });
     fetchData();
   };
 

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useOptionalMobileNav } from "@/lib/mobile-nav";
 
 const navItems = [
@@ -79,8 +78,7 @@ export default function Sidebar() {
   const closeMobile = () => mobileNav?.setOpen(false);
 
   const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     closeMobile();
     router.push("/login");
   };
