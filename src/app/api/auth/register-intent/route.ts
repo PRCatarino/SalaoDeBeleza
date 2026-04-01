@@ -1,10 +1,34 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import type { PostgrestError } from "@supabase/supabase-js";
 import { isDisposableEmail, normalizeEmail } from "@/lib/email-policy";
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 const MAX_PER_EMAIL = 3;
 const MAX_PER_IP = 12;
+
+/** Tabela ainda não criada no projeto → não bloquear cadastro (limite só após rodar o SQL). */
+function isMissingSignupAttemptsTable(err: PostgrestError): boolean {
+  const m = (err.message || "").toLowerCase();
+  const c = err.code || "";
+  return (
+    c === "PGRST205" ||
+    c === "42P01" ||
+    (m.includes("signup_attempts") &&
+      (m.includes("schema cache") ||
+        m.includes("does not exist") ||
+        m.includes("not found")))
+  );
+}
+
+function isInvalidServiceKeyError(err: PostgrestError): boolean {
+  const m = (err.message || "").toLowerCase();
+  return (
+    m.includes("invalid api key") ||
+    m.includes("jwt") ||
+    m.includes("invalid authentication")
+  );
+}
 
 function getClientIp(request: Request): string {
   const xf = request.headers.get("x-forwarded-for");
@@ -55,6 +79,18 @@ export async function POST(request: Request) {
 
     if (e1) {
       console.error("[register-intent] email count", e1);
+      if (isMissingSignupAttemptsTable(e1)) {
+        console.warn(
+          "[register-intent] Tabela signup_attempts inexistente — rode supabase/migration_signup_attempts.sql no SQL Editor"
+        );
+        return NextResponse.json({ ok: true });
+      }
+      if (isInvalidServiceKeyError(e1)) {
+        return NextResponse.json(
+          { ok: false, code: "supabase_key_invalid" },
+          { status: 503 }
+        );
+      }
       return NextResponse.json(
         { ok: false, code: "internal" },
         { status: 500 }
@@ -76,6 +112,15 @@ export async function POST(request: Request) {
 
     if (e2) {
       console.error("[register-intent] ip count", e2);
+      if (isMissingSignupAttemptsTable(e2)) {
+        return NextResponse.json({ ok: true });
+      }
+      if (isInvalidServiceKeyError(e2)) {
+        return NextResponse.json(
+          { ok: false, code: "supabase_key_invalid" },
+          { status: 503 }
+        );
+      }
       return NextResponse.json(
         { ok: false, code: "internal" },
         { status: 500 }
@@ -96,6 +141,18 @@ export async function POST(request: Request) {
 
     if (insErr) {
       console.error("[register-intent] insert", insErr);
+      if (isMissingSignupAttemptsTable(insErr)) {
+        console.warn(
+          "[register-intent] insert falhou (tabela?) — cadastro permitido; execute migration_signup_attempts.sql"
+        );
+        return NextResponse.json({ ok: true });
+      }
+      if (isInvalidServiceKeyError(insErr)) {
+        return NextResponse.json(
+          { ok: false, code: "supabase_key_invalid" },
+          { status: 503 }
+        );
+      }
       return NextResponse.json(
         { ok: false, code: "internal" },
         { status: 500 }

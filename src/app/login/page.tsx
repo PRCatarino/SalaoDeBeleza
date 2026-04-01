@@ -54,6 +54,8 @@ export default function LoginPage() {
             "Muitas tentativas de cadastro nesta conexão. Aguarde 24 horas ou tente outra rede.",
           server_misconfigured:
             "Cadastro indisponível: configure SUPABASE_SERVICE_ROLE_KEY no servidor (Vercel).",
+          supabase_key_invalid:
+            "Chave do Supabase incorreta na Vercel: use a service_role (JWT longo eyJ...), não a chave publishable.",
           invalid_email: "Informe um e-mail válido.",
         };
         setError(

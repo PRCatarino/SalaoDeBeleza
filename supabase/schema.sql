@@ -33,6 +33,9 @@ create index if not exists signup_attempts_ip_time_idx
   on public.signup_attempts (ip, created_at desc);
 alter table public.signup_attempts enable row level security;
 
+grant usage on schema public to postgres, anon, authenticated, service_role;
+grant all on table public.signup_attempts to postgres, service_role;
+
 -- 2. Professionals (staff members)
 create table if not exists public.professionals (
   id uuid default gen_random_uuid() primary key,
