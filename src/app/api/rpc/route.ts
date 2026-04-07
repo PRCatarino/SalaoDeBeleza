@@ -2,9 +2,16 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, verifySession } from "@/lib/auth/jwt";
 import { isDbConnectionRefused } from "@/lib/db-connect-error";
+import { assertMutationOrigin } from "@/lib/request-origin";
 import * as db from "@/server/salon-db";
 
 export async function POST(request: Request) {
+  try {
+    assertMutationOrigin(request);
+  } catch {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
   const store = await cookies();
   const raw = store.get(COOKIE_NAME)?.value;
   if (!raw) {
@@ -126,9 +133,13 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ data });
   } catch (e) {
+    if (e instanceof Error && e.message === "invalid_avatar_url") {
+      return NextResponse.json({ error: "invalid_avatar_url" }, { status: 400 });
+    }
     if (isDbConnectionRefused(e)) {
       return NextResponse.json({ error: "db_unreachable" }, { status: 503 });
     }
-    throw e;
+    console.error("[rpc]", op, e);
+    return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
 }

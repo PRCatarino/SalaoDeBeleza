@@ -273,9 +273,9 @@ export default function AgendaPage() {
                               }));
                               setModalOpen(true);
                             }}
-                            className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-surface-container-low/50 rounded-lg group"
+                            className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-surface-container-low/50 active:bg-surface-container-low/70 rounded-lg group"
                           >
-                            <span className="material-symbols-outlined text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="material-symbols-outlined text-outline-variant text-lg opacity-35 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                               add
                             </span>
                           </div>

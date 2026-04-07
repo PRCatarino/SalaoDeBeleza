@@ -69,7 +69,15 @@ export default function ProfilePage() {
     const res = await fetch("/api/upload/avatar", { method: "POST", body: fd });
     if (!res.ok) {
       const j = (await res.json().catch(() => ({}))) as { error?: string };
-      setError(`Upload falhou: ${j.error || res.statusText}`);
+      const byErr: Record<string, string> = {
+        file_too_large: "Ficheiro demasiado grande (máx. 2 MB).",
+        invalid_image: "Formato de imagem inválido. Use JPEG, PNG, GIF ou WebP.",
+        forbidden: "Sessão ou origem inválida. Atualize a página.",
+      };
+      setError(
+        (j.error && byErr[j.error]) ||
+          `Upload falhou: ${j.error || res.statusText}`
+      );
       return;
     }
     const { url } = (await res.json()) as { url: string };
@@ -98,7 +106,12 @@ export default function ProfilePage() {
       });
     } catch (err) {
       setSaving(false);
-      setError(err instanceof Error ? err.message : "Erro ao salvar");
+      const msg = err instanceof Error ? err.message : "";
+      setError(
+        msg === "invalid_avatar_url"
+          ? "URL da foto inválida. Use apenas fotos enviadas pelo botão Enviar foto."
+          : msg || "Erro ao salvar"
+      );
       return;
     }
     setSaving(false);

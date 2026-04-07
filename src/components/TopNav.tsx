@@ -70,15 +70,17 @@ export default function TopNav({ title }: { title: string }) {
           {title}
         </h1>
       </div>
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="hidden sm:block text-right max-w-[140px] md:max-w-[200px]">
-            <p className="text-xs font-bold text-on-surface leading-none truncate">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="text-right min-w-0 max-w-[120px] sm:max-w-[140px] md:max-w-[200px]">
+            <p className="text-[11px] sm:text-xs font-bold text-on-surface leading-none truncate">
               {!ready ? "…" : displayName}
             </p>
-            <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium truncate">
-              {displaySalon}
-            </p>
+            {displaySalon ? (
+              <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-on-surface-variant font-medium truncate hidden sm:block">
+                {displaySalon}
+              </p>
+            ) : null}
           </div>
           <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold overflow-hidden shrink-0 relative">
             {ready && avatar ? (

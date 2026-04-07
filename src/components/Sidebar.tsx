@@ -4,16 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useOptionalMobileNav } from "@/lib/mobile-nav";
-
-const navItems = [
-  { href: "/dashboard", icon: "dashboard", label: "Dashboard" },
-  { href: "/agenda", icon: "calendar_today", label: "Agenda" },
-  { href: "/services", icon: "content_cut", label: "Serviços" },
-  { href: "/financials", icon: "payments", label: "Financeiro" },
-  { href: "/inventory", icon: "inventory_2", label: "Estoque" },
-  { href: "/team", icon: "badge", label: "Equipe" },
-  { href: "/profile", icon: "person", label: "Perfil e Loja" },
-];
+import { dashboardNavItems } from "@/lib/nav-items";
 
 function NavList({
   pathname,
@@ -24,7 +15,7 @@ function NavList({
 }) {
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
-      {navItems.map((item) => {
+      {dashboardNavItems.map((item) => {
         const isActive = pathname === item.href;
         return (
           <Link

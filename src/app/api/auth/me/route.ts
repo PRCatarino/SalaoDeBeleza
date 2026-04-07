@@ -31,6 +31,7 @@ export async function GET() {
     if (isDbConnectionRefused(e)) {
       return NextResponse.json({ error: "db_unreachable" }, { status: 503 });
     }
-    throw e;
+    console.error("[me]", e);
+    return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
 }

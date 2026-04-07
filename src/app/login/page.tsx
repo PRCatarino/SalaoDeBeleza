@@ -62,6 +62,8 @@ export default function LoginPage() {
           db_auth_failed:
             "A password na DATABASE_URL não bate com o utilizador salao_app no Postgres. Na VPS rode ALTER ROLE salao_app PASSWORD 'sua_senha'; e use a mesma na URL (caracteres especiais em percent-encoding, ex.: $ → %24).",
           invalid_email: "Informe um e-mail válido.",
+          forbidden:
+            "Pedido rejeitado (origem inválida). Atualize a página e tente de novo no mesmo site.",
         };
         setError(
           (code && byCode[code]) ||
@@ -85,16 +87,29 @@ export default function LoginPage() {
         if (regRes.status === 409) {
           setError("Já existe conta com este e-mail. Faça login.");
         } else {
-          const j = (await regRes.json().catch(() => ({}))) as { error?: string };
-          setError(
-            j.error === "invalid"
-              ? "Dados inválidos. Use senha com pelo menos 6 caracteres."
-              : j.error === "db_unreachable"
+          const j = (await regRes.json().catch(() => ({}))) as {
+            error?: string;
+            message?: string;
+          };
+          if (j.message) {
+            setError(j.message);
+          } else if (regRes.status === 429) {
+            setError(
+              "Muitas tentativas de cadastro neste dispositivo. Aguarde cerca de 1 hora."
+            );
+          } else if (regRes.status === 403) {
+            setError(
+              "Pedido rejeitado por segurança. Atualize a página e tente novamente."
+            );
+          } else {
+            setError(
+              j.error === "db_unreachable"
                 ? "Sem ligação ao PostgreSQL."
                 : j.error === "db_auth_failed"
                   ? "DATABASE_URL: utilizador ou password incorretos no Postgres."
                   : "Não foi possível criar a conta."
-          );
+            );
+          }
         }
         setLoading(false);
         return;
@@ -116,6 +131,14 @@ export default function LoginPage() {
             j.error === "db_auth_failed"
               ? "DATABASE_URL: password do Postgres (salao_app) incorreta. Alinhe com ALTER ROLE na VPS."
               : "Sem ligação ao PostgreSQL. Verifique DATABASE_URL."
+          );
+        } else if (loginRes.status === 429) {
+          setError(
+            "Muitas tentativas de login. Aguarde cerca de 15 minutos ou tente outra rede."
+          );
+        } else if (loginRes.status === 403) {
+          setError(
+            "Pedido rejeitado por segurança. Atualize a página e tente novamente."
           );
         } else {
           setError("E-mail ou senha incorretos.");
@@ -203,9 +226,9 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary text-on-surface transition-all"
-                placeholder="••••••••"
+                placeholder="Mín. 10 caracteres, letras e números"
                 required
-                minLength={6}
+                minLength={10}
               />
             </div>
 

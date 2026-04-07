@@ -151,16 +151,26 @@ export default function DashboardPage() {
             <h3 className="text-xl font-bold font-headline mb-8">
               Receita por Dia da Semana
             </h3>
-            <div className="h-48 flex items-end gap-2 px-4">
+            <div className="h-52 sm:h-48 flex items-end gap-1.5 sm:gap-2 px-2 sm:px-4">
               {revenueByDay.map((val, i) => (
                 <div
                   key={i}
-                  className="flex-1 bg-primary/15 hover:bg-primary/30 transition-colors rounded-t-sm relative group"
-                  style={{ height: `${(val / maxRevenue) * 100}%`, minHeight: "4px" }}
+                  className="flex-1 flex flex-col justify-end items-center min-w-0 gap-1"
                 >
-                  <div className="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-[10px] py-1 px-2 rounded whitespace-nowrap">
-                    {formatCurrency(val)}
+                  <div
+                    className="w-full bg-primary/15 hover:bg-primary/30 transition-colors rounded-t-sm relative group"
+                    style={{
+                      height: `${(val / maxRevenue) * 100}%`,
+                      minHeight: "4px",
+                    }}
+                  >
+                    <div className="hidden md:group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-on-background text-white text-[10px] py-1 px-2 rounded whitespace-nowrap z-10">
+                      {formatCurrency(val)}
+                    </div>
                   </div>
+                  <span className="md:hidden text-[9px] font-bold text-on-surface-variant tabular-nums truncate w-full text-center">
+                    {val > 0 ? formatCurrency(val) : "—"}
+                  </span>
                 </div>
               ))}
             </div>

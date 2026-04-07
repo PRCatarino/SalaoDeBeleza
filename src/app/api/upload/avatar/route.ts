@@ -3,10 +3,20 @@ import path from "path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, verifySession } from "@/lib/auth/jwt";
-
-const ALLOWED_EXT = new Set(["jpg", "jpeg", "png", "gif", "webp"]);
+import {
+  MAX_AVATAR_BYTES,
+  randomAvatarFilename,
+  sniffAvatarImage,
+} from "@/lib/image-sniff";
+import { assertMutationOrigin } from "@/lib/request-origin";
 
 export async function POST(request: Request) {
+  try {
+    assertMutationOrigin(request);
+  } catch {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
   const store = await cookies();
   const raw = store.get(COOKIE_NAME)?.value;
   if (!raw) {
@@ -33,35 +43,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "file_required" }, { status: 400 });
   }
 
-  const name = file.name || "upload";
-  const extFromName = (name.split(".").pop() || "").toLowerCase();
-  let ext = extFromName;
-  if (!ALLOWED_EXT.has(ext)) {
-    const t = file.type.toLowerCase();
-    if (t.includes("jpeg")) ext = "jpg";
-    else if (t.includes("png")) ext = "png";
-    else if (t.includes("gif")) ext = "gif";
-    else if (t.includes("webp")) ext = "webp";
-  }
-  if (!ALLOWED_EXT.has(ext)) {
-    return NextResponse.json({ error: "invalid_file_type" }, { status: 400 });
+  if (file.size > MAX_AVATAR_BYTES) {
+    return NextResponse.json({ error: "file_too_large" }, { status: 400 });
   }
 
-  const ts = Date.now();
-  const filename = `${ts}.${ext}`;
-  const dir = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "avatars",
-    sub
-  );
-  const rel = `/uploads/avatars/${sub}/${filename}`;
-  const full = path.join(dir, filename);
-
-  await mkdir(dir, { recursive: true });
   const buf = Buffer.from(await file.arrayBuffer());
-  await writeFile(full, buf);
+  const sniffed = sniffAvatarImage(buf);
+  if (!sniffed) {
+    return NextResponse.json({ error: "invalid_image" }, { status: 400 });
+  }
 
-  return NextResponse.json({ url: rel });
+  const filename = randomAvatarFilename(sniffed.ext);
+  const userRoot = path.resolve(process.cwd(), "data", "private-avatars", sub);
+  const fullPath = path.resolve(userRoot, filename);
+  const rel = path.relative(userRoot, fullPath);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) {
+    return NextResponse.json({ error: "invalid_path" }, { status: 400 });
+  }
+
+  await mkdir(userRoot, { recursive: true });
+  await writeFile(fullPath, buf);
+
+  const url = `/api/avatars/${sub}/${filename}`;
+  return NextResponse.json({ url });
 }

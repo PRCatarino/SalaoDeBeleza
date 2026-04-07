@@ -1,3 +1,4 @@
+import { sanitizeAvatarUrl } from "@/lib/avatar-policy";
 import { getSql, type SqlClient } from "@/lib/db";
 
 function monthRange(year: number, month1to12: number) {
@@ -62,7 +63,12 @@ export async function profileGet(sub: string) {
     WHERE id = ${sub}::uuid
     LIMIT 1
   `;
-  return rows[0] ?? null;
+  const row = rows[0] ?? null;
+  if (!row) return null;
+  return {
+    ...row,
+    avatar_url: sanitizeAvatarUrl(row.avatar_url, sub),
+  };
 }
 
 export async function profileEnsure(sub: string, email: string) {
@@ -110,7 +116,12 @@ export async function profileEnsure(sub: string, email: string) {
       WHERE id = ${sub}::uuid
     `;
   }
-  return rows[0] ?? null;
+  const r = rows[0] ?? null;
+  if (!r) return null;
+  return {
+    ...r,
+    avatar_url: sanitizeAvatarUrl(r.avatar_url, sub),
+  };
 }
 
 const PROFILE_PATCH_KEYS = new Set([
@@ -135,6 +146,21 @@ export async function profileUpsert(
   for (const [k, v] of Object.entries(patch)) {
     if (!PROFILE_PATCH_KEYS.has(k) || v === undefined) continue;
     if (k === "role" && v !== "admin" && v !== "manager") continue;
+    if (k === "avatar_url") {
+      const raw =
+        v === null || v === undefined
+          ? null
+          : typeof v === "string"
+            ? v
+            : null;
+      const trimmed = raw?.trim() ?? "";
+      const clean = sanitizeAvatarUrl(trimmed || null, sub);
+      if (trimmed.length > 0 && clean === null) {
+        throw new Error("invalid_avatar_url");
+      }
+      data[k] = clean;
+      continue;
+    }
     data[k] = v;
   }
   const keys = Object.keys(data);

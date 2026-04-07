@@ -22,10 +22,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (path.startsWith("/uploads/")) {
-    return NextResponse.next();
-  }
-
   const secret = process.env.AUTH_SECRET?.trim() ?? "";
   const token = request.cookies.get(COOKIE_NAME)?.value ?? null;
   const session =
@@ -44,7 +40,7 @@ export async function middleware(request: NextRequest) {
   if (secret.length < 32) {
     if (path.startsWith("/api/")) {
       return NextResponse.json(
-        { error: "AUTH_SECRET not configured (min 32 chars)" },
+        { error: "service_unavailable" },
         { status: 503 }
       );
     }

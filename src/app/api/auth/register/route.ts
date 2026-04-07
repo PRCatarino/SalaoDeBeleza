@@ -2,14 +2,24 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, signSession } from "@/lib/auth/jwt";
+import { getClientIp } from "@/lib/client-ip";
 import {
   isDbConnectionRefused,
   isPgPasswordAuthFailed,
 } from "@/lib/db-connect-error";
+import {
+  isPasswordStrongEnough,
+  passwordPolicyMessage,
+} from "@/lib/password-policy";
+import { rateLimitExceeded } from "@/lib/rate-limit-memory";
+import { assertMutationOrigin } from "@/lib/request-origin";
 import { registerUserApp } from "@/server/salon-db";
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 const BCRYPT_ROUNDS = 12;
+
+const REGISTER_WINDOW_MS = 60 * 60 * 1000;
+const REGISTER_MAX_PER_IP = 8;
 
 function sessionCookieOpts() {
   return {
@@ -30,6 +40,17 @@ function pgCode(e: unknown): string | undefined {
 
 export async function POST(request: Request) {
   try {
+    assertMutationOrigin(request);
+  } catch {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  const ip = getClientIp(request);
+  if (rateLimitExceeded(`register:${ip}`, REGISTER_MAX_PER_IP, REGISTER_WINDOW_MS)) {
+    return NextResponse.json({ error: "rate_limit" }, { status: 429 });
+  }
+
+  try {
     const body = await request.json().catch(() => null);
     const email = typeof body?.email === "string" ? body.email.trim() : "";
     const password =
@@ -45,9 +66,12 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (password.length < 6) {
+    if (!isPasswordStrongEnough(password)) {
       return NextResponse.json(
-        { error: "validation", message: "password min 6 characters" },
+        {
+          error: "validation",
+          message: passwordPolicyMessage(),
+        },
         { status: 400 }
       );
     }
@@ -81,6 +105,7 @@ export async function POST(request: Request) {
     if (isDbConnectionRefused(e)) {
       return NextResponse.json({ error: "db_unreachable" }, { status: 503 });
     }
-    throw e;
+    console.error("[register]", e);
+    return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
 }

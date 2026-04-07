@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server";
+import { getClientIp } from "@/lib/client-ip";
 import { getSql } from "@/lib/db";
 import {
   isDbConnectionRefused,
   isPgPasswordAuthFailed,
 } from "@/lib/db-connect-error";
 import { isDisposableEmail, normalizeEmail } from "@/lib/email-policy";
+import { assertMutationOrigin } from "@/lib/request-origin";
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 const MAX_PER_EMAIL = 3;
 const MAX_PER_IP = 12;
-
-function getClientIp(request: Request): string {
-  const xf = request.headers.get("x-forwarded-for");
-  if (xf) return xf.split(",")[0]?.trim() || "unknown";
-  return request.headers.get("x-real-ip")?.trim() || "unknown";
-}
 
 function pgCode(e: unknown): string | undefined {
   if (e && typeof e === "object" && "code" in e) {
@@ -24,6 +20,15 @@ function pgCode(e: unknown): string | undefined {
 }
 
 export async function POST(request: Request) {
+  try {
+    assertMutationOrigin(request);
+  } catch {
+    return NextResponse.json(
+      { ok: false, code: "forbidden" },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await request.json().catch(() => null);
     const emailRaw = body?.email;
