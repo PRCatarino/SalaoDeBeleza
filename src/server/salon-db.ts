@@ -1,5 +1,40 @@
 import { sanitizeAvatarUrl } from "@/lib/avatar-policy";
+import { isValidCpf, normalizeCpf } from "@/lib/cpf";
 import { getSql, type SqlClient } from "@/lib/db";
+
+function parseClientFields(args: Record<string, unknown>) {
+  const full_name = String(args.full_name ?? "").trim();
+  const phone = String(args.phone ?? "").trim();
+  const cpf = normalizeCpf(String(args.cpf ?? ""));
+  const birthRaw = String(args.birth_date ?? "").trim();
+
+  if (!full_name) throw new Error("invalid_client_full_name");
+  if (!phone) throw new Error("invalid_client_phone");
+  if (!isValidCpf(cpf)) throw new Error("invalid_client_cpf");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birthRaw)) {
+    throw new Error("invalid_client_birth_date");
+  }
+  const birth = new Date(`${birthRaw}T12:00:00`);
+  if (Number.isNaN(birth.getTime())) throw new Error("invalid_client_birth_date");
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  if (birth > today) throw new Error("invalid_client_birth_date");
+
+  return {
+    full_name,
+    phone,
+    cpf,
+    birth_date: birthRaw,
+    email:
+      args.email != null && String(args.email).trim()
+        ? String(args.email).trim()
+        : null,
+    notes:
+      args.notes != null && String(args.notes).trim()
+        ? String(args.notes).trim()
+        : null,
+  };
+}
 
 function monthRange(year: number, month1to12: number) {
   const start = new Date(Date.UTC(year, month1to12 - 1, 1));
@@ -558,13 +593,16 @@ export async function clientsInsert(
   args: Record<string, unknown>
 ) {
   const sql = getSql();
+  const p = parseClientFields(args);
   const [row] = await sql`
-    INSERT INTO clients (full_name, email, phone, notes)
+    INSERT INTO clients (full_name, email, phone, notes, cpf, birth_date)
     VALUES (
-      ${String(args.full_name ?? "")},
-      ${args.email != null ? String(args.email) : null},
-      ${args.phone != null ? String(args.phone) : null},
-      ${args.notes != null ? String(args.notes) : null}
+      ${p.full_name},
+      ${p.email},
+      ${p.phone},
+      ${p.notes},
+      ${p.cpf},
+      ${p.birth_date}::date
     )
     RETURNING *
   `;
@@ -578,12 +616,15 @@ export async function clientsUpdate(
   const sql = getSql();
   const id = String(args.id ?? "");
   if (!id) throw new Error("id required");
+  const p = parseClientFields(args);
   const [row] = await sql`
     UPDATE clients SET
-      full_name = ${String(args.full_name ?? "")},
-      email = ${args.email != null ? String(args.email) : null},
-      phone = ${args.phone != null ? String(args.phone) : null},
-      notes = ${args.notes != null ? String(args.notes) : null}
+      full_name = ${p.full_name},
+      email = ${p.email},
+      phone = ${p.phone},
+      notes = ${p.notes},
+      cpf = ${p.cpf},
+      birth_date = ${p.birth_date}::date
     WHERE id = ${id}::uuid
     RETURNING *
   `;

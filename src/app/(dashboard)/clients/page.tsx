@@ -2,9 +2,16 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { salonRpc } from "@/lib/rpc-client";
+import { clientFieldErrorMessage } from "@/lib/client-form-errors";
+import { formatCpfDisplay, normalizeCpf } from "@/lib/cpf";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Client } from "@/lib/types";
+
+function formatBirthPt(isoDate: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return isoDate;
+  return new Date(`${isoDate}T12:00:00`).toLocaleDateString("pt-BR");
+}
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -15,6 +22,8 @@ export default function ClientsPage() {
     full_name: "",
     email: "",
     phone: "",
+    cpf: "",
+    birth_date: "",
     notes: "",
   });
   const [loading, setLoading] = useState(true);
@@ -31,18 +40,29 @@ export default function ClientsPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const qDigits = q.replace(/\D/g, "");
     if (!q) return clients;
-    return clients.filter(
-      (c) =>
+    return clients.filter((c) => {
+      const cpfDigits = normalizeCpf(c.cpf || "");
+      return (
         c.full_name.toLowerCase().includes(q) ||
         (c.email?.toLowerCase().includes(q) ?? false) ||
-        (c.phone?.toLowerCase().includes(q) ?? false)
-    );
+        c.phone.toLowerCase().includes(q) ||
+        (qDigits.length >= 3 && cpfDigits.includes(qDigits))
+      );
+    });
   }, [clients, query]);
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ full_name: "", email: "", phone: "", notes: "" });
+    setForm({
+      full_name: "",
+      email: "",
+      phone: "",
+      cpf: "",
+      birth_date: "",
+      notes: "",
+    });
     setModalOpen(true);
   };
 
@@ -52,6 +72,8 @@ export default function ClientsPage() {
       full_name: c.full_name,
       email: c.email || "",
       phone: c.phone || "",
+      cpf: formatCpfDisplay(c.cpf || ""),
+      birth_date: (c.birth_date || "").slice(0, 10),
       notes: c.notes || "",
     });
     setModalOpen(true);
@@ -60,18 +82,25 @@ export default function ClientsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      full_name: form.full_name,
+      full_name: form.full_name.trim(),
       email: form.email.trim() || null,
-      phone: form.phone.trim() || null,
+      phone: form.phone.trim(),
+      cpf: normalizeCpf(form.cpf),
+      birth_date: form.birth_date,
       notes: form.notes.trim() || null,
     };
-    if (editing) {
-      await salonRpc("clientsUpdate", { id: editing.id, ...payload });
-    } else {
-      await salonRpc("clientsInsert", payload);
+    try {
+      if (editing) {
+        await salonRpc("clientsUpdate", { id: editing.id, ...payload });
+      } else {
+        await salonRpc("clientsInsert", payload);
+      }
+      setModalOpen(false);
+      fetchData();
+    } catch (err) {
+      const code = err instanceof Error ? err.message : "";
+      alert(clientFieldErrorMessage(code));
     }
-    setModalOpen(false);
-    fetchData();
   };
 
   const handleDelete = async (id: string) => {
@@ -90,7 +119,7 @@ export default function ClientsPage() {
               Gerenciar clientes
             </h1>
             <p className="text-on-surface-variant text-base sm:text-lg">
-              Cadastre, edite e organize a base de clientes do salão.
+              Cadastre, edite e organize a base de clientes do salão. Telefone, CPF e data de nascimento são obrigatórios.
             </p>
           </div>
           <button
@@ -116,7 +145,7 @@ export default function ClientsPage() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nome, e-mail ou telefone…"
+              placeholder="Buscar por nome, e-mail, telefone ou CPF…"
               className="w-full h-12 pl-12 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
@@ -170,12 +199,18 @@ export default function ClientsPage() {
                 </div>
                 <h3 className="font-headline text-xl font-bold text-on-surface mb-3">{c.full_name}</h3>
                 <div className="space-y-2 text-sm text-on-surface-variant">
-                  {c.phone ? (
-                    <p className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-lg text-outline">call</span>
-                      {c.phone}
-                    </p>
-                  ) : null}
+                  <p className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg text-outline">call</span>
+                    {c.phone}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg text-outline">id_card</span>
+                    {formatCpfDisplay(c.cpf || "")}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg text-outline">cake</span>
+                    {c.birth_date ? formatBirthPt(c.birth_date.slice(0, 10)) : "—"}
+                  </p>
                   {c.email ? (
                     <p className="flex items-center gap-2 break-all">
                       <span className="material-symbols-outlined text-lg text-outline shrink-0">mail</span>
@@ -206,7 +241,7 @@ export default function ClientsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
-              Nome completo
+              Nome completo <span className="text-error">*</span>
             </label>
             <input
               type="text"
@@ -219,26 +254,63 @@ export default function ClientsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
-                Telefone
+                Telefone <span className="text-error">*</span>
               </label>
               <input
-                type="text"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
                 value={form.phone}
                 onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                 className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                required
+                placeholder="(11) 99999-0000"
               />
             </div>
             <div>
               <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
-                E-mail
+                CPF <span className="text-error">*</span>
               </label>
               <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={form.cpf}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    cpf: formatCpfDisplay(normalizeCpf(e.target.value)),
+                  }))
+                }
                 className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                required
+                maxLength={14}
+                placeholder="000.000.000-00"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+              Data de nascimento <span className="text-error">*</span>
+            </label>
+            <input
+              type="date"
+              value={form.birth_date}
+              onChange={(e) => setForm((f) => ({ ...f, birth_date: e.target.value }))}
+              className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+              E-mail
+            </label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+            />
           </div>
           <div>
             <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">

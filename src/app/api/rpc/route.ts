@@ -139,6 +139,15 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ data });
   } catch (e) {
+    const clientFieldErrors = new Set([
+      "invalid_client_full_name",
+      "invalid_client_phone",
+      "invalid_client_cpf",
+      "invalid_client_birth_date",
+    ]);
+    if (e instanceof Error && clientFieldErrors.has(e.message)) {
+      return NextResponse.json({ error: e.message }, { status: 400 });
+    }
     if (e instanceof Error && e.message === "invalid_avatar_url") {
       return NextResponse.json({ error: "invalid_avatar_url" }, { status: 400 });
     }

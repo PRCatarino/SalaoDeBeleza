@@ -80,7 +80,9 @@ create table if not exists public.clients (
   id uuid default gen_random_uuid() primary key,
   full_name text not null,
   email text,
-  phone text,
+  phone text not null,
+  cpf text not null,
+  birth_date date not null,
   notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

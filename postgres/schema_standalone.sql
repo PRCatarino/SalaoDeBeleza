@@ -84,7 +84,9 @@ CREATE TABLE IF NOT EXISTS public.clients (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   full_name text NOT NULL,
   email text,
-  phone text,
+  phone text NOT NULL,
+  cpf text NOT NULL,
+  birth_date date NOT NULL,
   notes text,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()

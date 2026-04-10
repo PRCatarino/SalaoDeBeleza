@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { salonRpc } from "@/lib/rpc-client";
+import { clientFieldErrorMessage } from "@/lib/client-form-errors";
+import { formatCpfDisplay, isValidCpf, normalizeCpf } from "@/lib/cpf";
 import TopNav from "@/components/TopNav";
 import Modal from "@/components/Modal";
 import type { Appointment, Professional, Service, Client } from "@/lib/types";
@@ -27,6 +29,8 @@ export default function AgendaPage() {
     notes: "",
     newClientName: "",
     newClientPhone: "",
+    newClientCpf: "",
+    newClientBirthDate: "",
   });
   const [loading, setLoading] = useState(true);
 
@@ -62,13 +66,33 @@ export default function AgendaPage() {
 
     let clientId = form.client_id;
 
-    if (!clientId && form.newClientName) {
-      const ins = await salonRpc("clientsInsert", {
-        full_name: form.newClientName,
-        phone: form.newClientPhone || null,
-      });
-      const row = ins.data as Client | null;
-      if (row?.id) clientId = row.id;
+    if (!clientId) {
+      const name = form.newClientName.trim();
+      const phone = form.newClientPhone.trim();
+      const cpf = normalizeCpf(form.newClientCpf);
+      const birth = form.newClientBirthDate;
+      if (!name || !phone || !birth) {
+        alert("Para novo cliente, preencha nome, telefone, CPF e data de nascimento.");
+        return;
+      }
+      if (!isValidCpf(cpf)) {
+        alert(clientFieldErrorMessage("invalid_client_cpf"));
+        return;
+      }
+      try {
+        const ins = await salonRpc("clientsInsert", {
+          full_name: name,
+          phone,
+          cpf,
+          birth_date: birth,
+        });
+        const row = ins.data as Client | null;
+        if (row?.id) clientId = row.id;
+      } catch (err) {
+        const code = err instanceof Error ? err.message : "";
+        alert(clientFieldErrorMessage(code));
+        return;
+      }
     }
 
     if (!clientId || !form.professional_id || !form.service_id) return;
@@ -98,6 +122,8 @@ export default function AgendaPage() {
       notes: "",
       newClientName: "",
       newClientPhone: "",
+      newClientCpf: "",
+      newClientBirthDate: "",
     });
     fetchData();
   };
@@ -313,29 +339,69 @@ export default function AgendaPage() {
           </div>
 
           {!form.client_id && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
-                  Nome do Cliente
-                </label>
-                <input
-                  type="text"
-                  value={form.newClientName}
-                  onChange={(e) => setForm((f) => ({ ...f, newClientName: e.target.value }))}
-                  className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
-                  required={!form.client_id}
-                />
-              </div>
-              <div>
-                <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
-                  Telefone
-                </label>
-                <input
-                  type="text"
-                  value={form.newClientPhone}
-                  onChange={(e) => setForm((f) => ({ ...f, newClientPhone: e.target.value }))}
-                  className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
-                />
+            <div className="space-y-4 rounded-xl border border-surface-container-high p-4 bg-surface-container-low/30">
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">
+                Novo cliente — obrigatório
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+                    Nome completo <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.newClientName}
+                    onChange={(e) => setForm((f) => ({ ...f, newClientName: e.target.value }))}
+                    className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                    required={!form.client_id}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+                    Telefone <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    inputMode="tel"
+                    value={form.newClientPhone}
+                    onChange={(e) => setForm((f) => ({ ...f, newClientPhone: e.target.value }))}
+                    className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                    required={!form.client_id}
+                    placeholder="(11) 99999-0000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+                    CPF <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={form.newClientCpf}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        newClientCpf: formatCpfDisplay(normalizeCpf(e.target.value)),
+                      }))
+                    }
+                    className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                    required={!form.client_id}
+                    maxLength={14}
+                    placeholder="000.000.000-00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+                    Data de nascimento <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={form.newClientBirthDate}
+                    onChange={(e) => setForm((f) => ({ ...f, newClientBirthDate: e.target.value }))}
+                    className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary"
+                    required={!form.client_id}
+                  />
+                </div>
               </div>
             </div>
           )}
