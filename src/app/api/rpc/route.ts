@@ -89,6 +89,12 @@ export async function POST(request: Request) {
       case "clientsInsert":
         data = await db.clientsInsert(sub, args);
         break;
+      case "clientsUpdate":
+        data = await db.clientsUpdate(sub, args);
+        break;
+      case "clientsDelete":
+        data = await db.clientsDelete(sub, args);
+        break;
       case "appointmentsForDay":
         data = await db.appointmentsForDay(sub, args);
         break;

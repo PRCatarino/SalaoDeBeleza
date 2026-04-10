@@ -2,6 +2,7 @@
 export const dashboardNavItems = [
   { href: "/dashboard", icon: "dashboard", label: "Dashboard", shortLabel: "Início" },
   { href: "/agenda", icon: "calendar_today", label: "Agenda", shortLabel: "Agenda" },
+  { href: "/clients", icon: "groups", label: "Clientes", shortLabel: "Clientes" },
   { href: "/services", icon: "content_cut", label: "Serviços", shortLabel: "Serviços" },
   { href: "/financials", icon: "payments", label: "Financeiro", shortLabel: "Financ." },
   { href: "/inventory", icon: "inventory_2", label: "Estoque", shortLabel: "Estoque" },

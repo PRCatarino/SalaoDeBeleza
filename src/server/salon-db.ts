@@ -571,6 +571,38 @@ export async function clientsInsert(
   return row;
 }
 
+export async function clientsUpdate(
+  _userId: string,
+  args: Record<string, unknown>
+) {
+  const sql = getSql();
+  const id = String(args.id ?? "");
+  if (!id) throw new Error("id required");
+  const [row] = await sql`
+    UPDATE clients SET
+      full_name = ${String(args.full_name ?? "")},
+      email = ${args.email != null ? String(args.email) : null},
+      phone = ${args.phone != null ? String(args.phone) : null},
+      notes = ${args.notes != null ? String(args.notes) : null}
+    WHERE id = ${id}::uuid
+    RETURNING *
+  `;
+  return row ?? null;
+}
+
+export async function clientsDelete(
+  _userId: string,
+  args: Record<string, unknown>
+) {
+  const sql = getSql();
+  const id = String(args.id ?? "");
+  if (!id) throw new Error("id required");
+  const rows = await sql`
+    DELETE FROM clients WHERE id = ${id}::uuid RETURNING id
+  `;
+  return { deleted: rows.length > 0 };
+}
+
 export async function appointmentsForDay(
   _userId: string,
   args: Record<string, unknown>

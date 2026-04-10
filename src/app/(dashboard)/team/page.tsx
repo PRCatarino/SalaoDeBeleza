@@ -249,17 +249,62 @@ export default function TeamPage() {
               <input type="text" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Tipo de Comissão</label>
-              <select value={form.commission_type} onChange={(e) => setForm((f) => ({ ...f, commission_type: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary">
-                <option value="percentage">Percentual (%)</option>
-                <option value="fixed">Valor Fixo (R$)</option>
-              </select>
+          <div>
+            <span className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+              Comissão do colaborador
+            </span>
+            <div className="flex rounded-xl bg-surface-container-highest p-1 gap-1 mb-3">
+              <button
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, commission_type: "percentage" }))}
+                className={`flex-1 h-11 rounded-lg text-sm font-bold transition-all ${
+                  form.commission_type === "percentage"
+                    ? "bg-white text-primary shadow-sm"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                Percentual (%)
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, commission_type: "fixed" }))}
+                className={`flex-1 h-11 rounded-lg text-sm font-bold transition-all ${
+                  form.commission_type === "fixed"
+                    ? "bg-white text-primary shadow-sm"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                Valor fixo (R$)
+              </button>
             </div>
             <div>
-              <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">Valor</label>
-              <input type="number" step="0.01" value={form.commission_value} onChange={(e) => setForm((f) => ({ ...f, commission_value: e.target.value }))} className="w-full h-12 px-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary" />
+              <label className="block text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-widest mb-2">
+                {form.commission_type === "percentage" ? "Percentual sobre o serviço" : "Valor fixo por atendimento"}
+              </label>
+              <div className="relative">
+                {form.commission_type === "fixed" ? (
+                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-on-surface-variant">
+                    R$
+                  </span>
+                ) : null}
+                <input
+                  type="number"
+                  step={form.commission_type === "percentage" ? "0.1" : "0.01"}
+                  min="0"
+                  max={form.commission_type === "percentage" ? "100" : undefined}
+                  value={form.commission_value}
+                  onChange={(e) => setForm((f) => ({ ...f, commission_value: e.target.value }))}
+                  className={`w-full h-12 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary ${
+                    form.commission_type === "fixed" ? "pl-12 pr-4" : "px-4 pr-11"
+                  }`}
+                  placeholder={form.commission_type === "percentage" ? "Ex: 40" : "25,00"}
+                />
+                {form.commission_type === "percentage" ? (
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-on-surface-variant">
+                    %
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
           <div>
