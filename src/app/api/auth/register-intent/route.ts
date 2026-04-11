@@ -1,23 +1,14 @@
 import { NextResponse } from "next/server";
 import { getClientIp } from "@/lib/client-ip";
 import { getSql } from "@/lib/db";
-import {
-  isDbConnectionRefused,
-  isPgPasswordAuthFailed,
-} from "@/lib/db-connect-error";
+import { pgErrorCode } from "@/lib/db-connect-error";
+import { nextResponseForDbError } from "@/lib/db-http";
 import { isDisposableEmail, normalizeEmail } from "@/lib/email-policy";
 import { assertMutationOrigin } from "@/lib/request-origin";
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 const MAX_PER_EMAIL = 3;
 const MAX_PER_IP = 12;
-
-function pgCode(e: unknown): string | undefined {
-  if (e && typeof e === "object" && "code" in e) {
-    return String((e as { code: unknown }).code);
-  }
-  return undefined;
-}
 
 export async function POST(request: Request) {
   try {
@@ -73,21 +64,15 @@ export async function POST(request: Request) {
       `;
       ipCount = Number(ic);
     } catch (e) {
-      if (pgCode(e) === "42P01") {
+      if (pgErrorCode(e) === "42P01") {
         return NextResponse.json({ ok: true });
       }
-      if (isPgPasswordAuthFailed(e)) {
-        return NextResponse.json(
-          { ok: false, code: "db_auth_failed" },
-          { status: 503 }
-        );
-      }
-      if (isDbConnectionRefused(e)) {
-        return NextResponse.json(
-          { ok: false, code: "db_unreachable" },
-          { status: 503 }
-        );
-      }
+      const dbCount = nextResponseForDbError(
+        e,
+        "register-intent:count",
+        "intent"
+      );
+      if (dbCount) return dbCount;
       throw e;
     }
 
@@ -110,38 +95,22 @@ export async function POST(request: Request) {
         VALUES (${email}, ${ip})
       `;
     } catch (e) {
-      if (pgCode(e) === "42P01") {
+      if (pgErrorCode(e) === "42P01") {
         return NextResponse.json({ ok: true });
       }
-      if (isPgPasswordAuthFailed(e)) {
-        return NextResponse.json(
-          { ok: false, code: "db_auth_failed" },
-          { status: 503 }
-        );
-      }
-      if (isDbConnectionRefused(e)) {
-        return NextResponse.json(
-          { ok: false, code: "db_unreachable" },
-          { status: 503 }
-        );
-      }
+      const dbIns = nextResponseForDbError(
+        e,
+        "register-intent:insert",
+        "intent"
+      );
+      if (dbIns) return dbIns;
       throw e;
     }
 
     return NextResponse.json({ ok: true });
   } catch (e) {
-    if (isPgPasswordAuthFailed(e)) {
-      return NextResponse.json(
-        { ok: false, code: "db_auth_failed" },
-        { status: 503 }
-      );
-    }
-    if (isDbConnectionRefused(e)) {
-      return NextResponse.json(
-        { ok: false, code: "db_unreachable" },
-        { status: 503 }
-      );
-    }
+    const dbResp = nextResponseForDbError(e, "register-intent", "intent");
+    if (dbResp) return dbResp;
     console.error("[register-intent]", e);
     return NextResponse.json(
       { ok: false, code: "internal" },

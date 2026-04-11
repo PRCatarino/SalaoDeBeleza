@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { databaseErrorMessage } from "@/lib/db-user-messages";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -57,10 +58,9 @@ export default function LoginPage() {
             "Muitas tentativas de cadastro nesta conexão. Aguarde 24 horas ou tente outra rede.",
           server_misconfigured:
             "Cadastro indisponível: configure DATABASE_URL no servidor.",
-          db_unreachable:
-            "Sem ligação ao PostgreSQL. Verifique se o servidor de BD está acessível e se DATABASE_URL está correto.",
-          db_auth_failed:
-            "A password na DATABASE_URL não bate com o utilizador salao_app no Postgres. Na VPS rode ALTER ROLE salao_app PASSWORD 'sua_senha'; e use a mesma na URL (caracteres especiais em percent-encoding, ex.: $ → %24).",
+          db_unreachable: databaseErrorMessage("db_unreachable"),
+          db_auth_failed: databaseErrorMessage("db_auth_failed"),
+          db_schema_outdated: databaseErrorMessage("db_schema_outdated"),
           invalid_email: "Informe um e-mail válido.",
           forbidden:
             "Pedido rejeitado (origem inválida). Atualize a página e tente de novo no mesmo site.",
@@ -103,11 +103,11 @@ export default function LoginPage() {
             );
           } else {
             setError(
-              j.error === "db_unreachable"
-                ? "Sem ligação ao PostgreSQL."
-                : j.error === "db_auth_failed"
-                  ? "DATABASE_URL: utilizador ou password incorretos no Postgres."
-                  : "Não foi possível criar a conta."
+              j.error === "db_unreachable" ||
+                j.error === "db_auth_failed" ||
+                j.error === "db_schema_outdated"
+                ? databaseErrorMessage(j.error)
+                : "Não foi possível criar a conta."
             );
           }
         }
@@ -127,11 +127,7 @@ export default function LoginPage() {
           const j = (await loginRes.json().catch(() => ({}))) as {
             error?: string;
           };
-          setError(
-            j.error === "db_auth_failed"
-              ? "DATABASE_URL: password do Postgres (salao_app) incorreta. Alinhe com ALTER ROLE na VPS."
-              : "Sem ligação ao PostgreSQL. Verifique DATABASE_URL."
-          );
+          setError(databaseErrorMessage(j.error));
         } else if (loginRes.status === 429) {
           setError(
             "Muitas tentativas de login. Aguarde cerca de 15 minutos ou tente outra rede."

@@ -3,10 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, signSession } from "@/lib/auth/jwt";
 import { getClientIp } from "@/lib/client-ip";
-import {
-  isDbConnectionRefused,
-  isPgPasswordAuthFailed,
-} from "@/lib/db-connect-error";
+import { nextResponseForDbError } from "@/lib/db-http";
 import {
   isPasswordStrongEnough,
   passwordPolicyMessage,
@@ -99,12 +96,8 @@ export async function POST(request: Request) {
     if (pgCode(e) === "23505") {
       return NextResponse.json({ error: "conflict" }, { status: 409 });
     }
-    if (isPgPasswordAuthFailed(e)) {
-      return NextResponse.json({ error: "db_auth_failed" }, { status: 503 });
-    }
-    if (isDbConnectionRefused(e)) {
-      return NextResponse.json({ error: "db_unreachable" }, { status: 503 });
-    }
+    const dbResp = nextResponseForDbError(e, "register", "rpc");
+    if (dbResp) return dbResp;
     console.error("[register]", e);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }

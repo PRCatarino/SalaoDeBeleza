@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, verifySession } from "@/lib/auth/jwt";
-import { isDbConnectionRefused } from "@/lib/db-connect-error";
+import { nextResponseForDbError } from "@/lib/db-http";
 import { profileEnsure } from "@/server/salon-db";
 
 export async function GET() {
@@ -28,9 +28,8 @@ export async function GET() {
     }
     return NextResponse.json(profile);
   } catch (e) {
-    if (isDbConnectionRefused(e)) {
-      return NextResponse.json({ error: "db_unreachable" }, { status: 503 });
-    }
+    const dbResp = nextResponseForDbError(e, "me", "rpc");
+    if (dbResp) return dbResp;
     console.error("[me]", e);
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
