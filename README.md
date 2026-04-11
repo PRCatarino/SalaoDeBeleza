@@ -24,47 +24,34 @@ Sistema completo de gestão para salões de beleza com Next.js e Supabase.
 
 ### 2. Variáveis de Ambiente
 
-Copie `.env.local.example` para `.env.local` e preencha a URL do projeto e a chave pública (publishable **ou** anon JWT):
+Copie `.env.local.example` para `.env.local`. O backend fala **direto com o Postgres** (não usa SDK do Supabase no código).
 
-```
-NEXT_PUBLIC_SITE_URL=https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app
-NEXT_PUBLIC_SUPABASE_URL=https://SEU_PROJETO.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sb_publishable_...
-```
+| Variável | Obrigatório | Descrição |
+|----------|-------------|-----------|
+| `DATABASE_URL` | Sim | Connection string PostgreSQL (veja Supabase abaixo). |
+| `AUTH_SECRET` | Sim | Mínimo **32 caracteres**. Ex.: `openssl rand -base64 32`. Sem isso o middleware redireciona com erro. |
+| `NEXT_PUBLIC_SITE_URL` | Não | URL pública do app (sem `/` no final), útil para links absolutos. |
 
-(Alternativa: `NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...` — o app aceita qualquer uma das duas.)
+**Supabase como banco na Vercel:** use a string **Transaction pooler** (porta **6543**, host `…pooler.supabase.com`), não a conexão direta `db.xxx.supabase.co:5432` (costuma falhar na Vercel por IPv6). Em **Supabase → Connect → ORMs → Transaction pooler** copie a URI e acrescente `?sslmode=require` se não vier na string.
+
+Postgres em VPS **sem** TLS: defina `DATABASE_SSL=false` nas env vars.
 
 ### 3. Deploy na Vercel
 
-No painel do projeto **Settings → Environment Variables**, adicione **exatamente** (em Production / Preview se quiser):
+1. **Settings → Environment Variables** (marque **Production** e, se quiser, **Preview**):
 
 | Nome | Valor |
 |------|--------|
-| `NEXT_PUBLIC_SITE_URL` | `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app` |
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://SEU_REF.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` | sua chave `sb_publishable_…` |
+| `DATABASE_URL` | URI do pooler (6543) ou do seu Postgres |
+| `AUTH_SECRET` | string ≥ 32 caracteres |
+| `NEXT_PUBLIC_SITE_URL` | `https://SEU-PROJETO.vercel.app` (opcional) |
+| `DATABASE_SSL` | `false` só se o banco for local/VPS sem SSL |
 
-*(Ou use `NEXT_PUBLIC_SUPABASE_ANON_KEY` com o JWT `eyJ…` no lugar da publishable.)*
+2. Salve e faça **Redeploy** (Deployments → ⋮ → Redeploy).
 
-Sem essas duas variáveis o **middleware** falha ou não autentica. Depois de salvar, faça um **Redeploy**.
+**Se o build passar mas o site quebra (login/API 503):** quase sempre é `DATABASE_URL` errada, banco inacessível da Vercel, ou falta de `AUTH_SECRET`. No log da função, erros de Postgres aparecem como `db_unreachable` / `ECONNREFUSED`.
 
-Adicione também **`NEXT_PUBLIC_SITE_URL`** com a URL pública do app (sem barra no final), ex.: `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app`. Assim o link **“Confirmar e-mail”** volta para a Vercel, e não para `localhost`.
-
-#### Confirmação de e-mail (não cair em localhost)
-
-No Supabase: **Authentication → URL Configuration**
-
-| Campo | Valor sugerido |
-|--------|----------------|
-| **Site URL** | `https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app` (ou domínio customizado) |
-| **Redirect URLs** | Inclua todas as URLs abaixo (uma por linha): |
-
-```
-http://localhost:3000/auth/callback
-https://salao-de-beleza-ex7t5wa5b-prcatarinos-projects.vercel.app/auth/callback
-```
-
-Sem isso, o Supabase pode gerar links apontando só para o Site URL antigo (ex.: localhost). Depois de alterar, peça um novo e-mail de confirmação ou cadastre de novo.
+**Erro `origin_mismatch` / 403 em cadastro:** em produção a API exige `Origin` do mesmo host; uso normal pelo browser na URL do deploy está ok.
 
 ### 4. Instalar e Rodar
 
@@ -77,10 +64,9 @@ Acesse `http://localhost:3000`
 
 ### 5. Primeiro Acesso
 
-1. Na tela de login, clique em "Cadastre-se"
-2. Crie sua conta com e-mail e senha
-3. Confirme o e-mail (verifique sua caixa de entrada)
-4. Faça login e comece a cadastrar seus dados
+1. Na tela de login, clique em **Cadastre-se**
+2. Preencha e-mail, senha, nome e nome do salão (a conta é criada no Postgres do projeto)
+3. Faça login e cadastre serviços, equipe e clientes
 
 ## Tecnologias
 
